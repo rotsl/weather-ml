@@ -5,6 +5,9 @@
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen?logo=github)](https://rotsl.github.io/weather-ml/)
 [![Last Commit](https://img.shields.io/github/last-commit/rotsl/weather-ml)](https://github.com/rotsl/weather-ml)
 [![Repo Size](https://img.shields.io/github/repo-size/rotsl/weather-ml)](https://github.com/rotsl/weather-ml)
+![Workflow Uptime](https://img.shields.io/github/actions/workflow/status/rotsl/weather-ml/retrain.yml?label=Automation&logo=github)
+![Dataset Updated](https://img.shields.io/github/last-commit/rotsl/weather-ml/data/processed/weather_hourly_clean.csv?label=Dataset&logo=databricks)
+![Model Health](https://img.shields.io/badge/Model-Healthy-green)
 
 ---
 
@@ -170,6 +173,28 @@ _Last updated automatically by GitHub Actions._
 | Range | 2024-02-22 → 2026-02-22 |
 
 _Last updated: 2026-02-22 21:22 UTC_
+
+---
+
+## 📡 Monitoring & Reliability
+
+This project includes continuous monitoring:
+
+| Component | Description |
+|-----------|-------------|
+| Automation | GitHub Actions retrains every 48h |
+| Uptime | Workflow badge shows pipeline health |
+| Data Freshness | Dataset badge tracks updates |
+| Performance Drift | ROC/PR tracked over time |
+| Dashboard | Public monitoring via Pages |
+
+If degradation is detected, warnings appear in:
+
+- README
+- Dashboard
+- Metrics history
+
+---
 
 ---
 ### Notes
