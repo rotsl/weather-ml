@@ -19,7 +19,6 @@ HISTORY = MODELS / "history" / "metrics_history.csv"
 # =====================================================
 
 def sparkline(series, width=12):
-
     ticks = "▁▂▃▄▅▆▇█"
 
     if len(series) < 2:
@@ -27,8 +26,10 @@ def sparkline(series, width=12):
 
     s = np.array(series[-width:], dtype=float)
 
-    s = (s - s.min()) / (s.max() - s.min() + 1e-9)
+    if np.allclose(s.max(), s.min()):
+        return ticks[0] * len(s)
 
+    s = (s - s.min()) / (s.max() - s.min() + 1e-9)
     return "".join(ticks[int(x * 7)] for x in s)
 
 
@@ -36,7 +37,12 @@ def sparkline(series, width=12):
 # Load metadata
 # =====================================================
 
-meta_file = list(MODELS.glob("*_current_meta.json"))[0]
+meta_files = list(MODELS.glob("*_current_meta.json"))
+
+if not meta_files:
+    raise RuntimeError("No current model metadata found.")
+
+meta_file = meta_files[0]
 meta = json.loads(meta_file.read_text())
 
 
@@ -44,47 +50,67 @@ meta = json.loads(meta_file.read_text())
 # Dataset info
 # =====================================================
 
-df = pd.read_csv(DATA, parse_dates=["datetime"])
-
-rows = len(df)
-start = df["datetime"].min().strftime("%Y-%m-%d")
-end = df["datetime"].max().strftime("%Y-%m-%d")
+if DATA.exists():
+    df = pd.read_csv(DATA, parse_dates=["datetime"])
+    rows = len(df)
+    start = df["datetime"].min().strftime("%Y-%m-%d")
+    end = df["datetime"].max().strftime("%Y-%m-%d")
+else:
+    rows = 0
+    start = "N/A"
+    end = "N/A"
 
 
 # =====================================================
 # Metrics history
 # =====================================================
 
-hist = pd.read_csv(HISTORY, parse_dates=["timestamp"])
+if HISTORY.exists():
+    hist = pd.read_csv(HISTORY, parse_dates=["timestamp"])
 
-roc_trend = sparkline(hist["roc_auc"])
-pr_trend = sparkline(hist["pr_auc"])
+    if len(hist) > 0:
+        roc_trend = sparkline(hist["roc_auc"])
+        pr_trend = sparkline(hist["pr_auc"])
 
-latest = hist.iloc[-1]
-prev = hist.iloc[-2] if len(hist) > 1 else None
+        latest = hist.iloc[-1]
+        prev = hist.iloc[-2] if len(hist) > 1 else None
+    else:
+        roc_trend = "n/a"
+        pr_trend = "n/a"
+        latest = None
+        prev = None
+else:
+    roc_trend = "n/a"
+    pr_trend = "n/a"
+    latest = None
+    prev = None
 
 
 # =====================================================
 # Degradation check
 # =====================================================
 
-warning = ""
+warning = "No history yet."
 
-if prev is not None:
+if latest is not None:
 
-    if latest["roc_auc"] < prev["roc_auc"] - 0.05:
-        warning = "🚨 ROC-AUC dropped > 0.05"
+    warning = ""
 
-    if latest["pr_auc"] < prev["pr_auc"] - 0.05:
-        warning += " | 🚨 PR-AUC dropped > 0.05"
+    if prev is not None:
+        if latest["roc_auc"] < prev["roc_auc"] - 0.05:
+            warning = "🚨 ROC-AUC dropped > 0.05"
 
+        if latest["pr_auc"] < prev["pr_auc"] - 0.05:
+            if warning:
+                warning += " | "
+            warning += "🚨 PR-AUC dropped > 0.05"
 
-if not warning:
-    warning = "✅ No degradation detected"
+    if not warning:
+        warning = "✅ No degradation detected"
 
 
 # =====================================================
-# Live forecast
+# Live forecast (Free-tier safe)
 # =====================================================
 
 API_KEY = os.getenv("VISUAL_CROSSING_KEY")
@@ -96,7 +122,6 @@ if not ENABLE_LIVE_FORECAST:
 elif not API_KEY or not LOCATION:
     forecast = "Unavailable (missing VISUAL_CROSSING_KEY or VISUAL_CROSSING_LOCATION)"
 else:
-    # Do the VC current fetch
     forecast = "Unavailable"
     try:
         url = (
@@ -111,11 +136,11 @@ else:
             js = json.loads(r.read())
 
         cur = js.get("currentConditions", {})
-        rain_p = cur.get("precipprob", 0)
+
+        rain_p = cur.get("precipprob")
         temp = cur.get("temp")
         hum = cur.get("humidity")
 
-        # Be robust if any field is missing
         parts = []
         if rain_p is not None:
             parts.append(f"{rain_p}% rain")
@@ -124,32 +149,7 @@ else:
         if hum is not None:
             parts.append(f"{hum}% RH")
 
-        forecast = " | ".join(parts) if parts else "Unavailable (no currentConditions fields)"
-
-    except Exception:
-        forecast = "API error"
-
-if API_KEY and LOCATION:
-
-    url = (
-        "https://weather.visualcrossing.com/"
-        "VisualCrossingWebServices/rest/services/timeline/"
-        f"{urllib.parse.quote_plus(LOCATION)}"
-        "?unitGroup=metric&include=current&contentType=json"
-        f"&key={API_KEY}"
-    )
-
-    try:
-        with urllib.request.urlopen(url, timeout=30) as r:
-            js = json.loads(r.read())
-
-        cur = js["currentConditions"]
-
-        rain_p = cur.get("precipprob", 0)
-        temp = cur.get("temp")
-        hum = cur.get("humidity")
-
-        forecast = f"{rain_p}% rain | {temp}°C | {hum}% RH"
+        forecast = " | ".join(parts) if parts else "Unavailable"
 
     except Exception:
         forecast = "API error"
@@ -158,6 +158,10 @@ if API_KEY and LOCATION:
 # =====================================================
 # Build dashboard
 # =====================================================
+
+latest_roc = f"{latest['roc_auc']:.4f}" if latest is not None else "N/A"
+latest_pr = f"{latest['pr_auc']:.4f}" if latest is not None else "N/A"
+pos_rate = f"{meta.get('positive_rate', 0):.4f}" if "positive_rate" in meta else "N/A"
 
 block = f"""
 ---
@@ -168,10 +172,10 @@ block = f"""
 
 | Field | Value |
 |-------|-------|
-| Horizon | {meta["horizon"]} ({meta["hours"]}h) |
-| Last trained | {meta["trained_at"]} |
-| Features | {len(meta["features"])} |
-| Positive rate | {meta["positive_rate"]:.4f} |
+| Horizon | {meta.get("horizon")} ({meta.get("hours")}h) |
+| Last trained | {meta.get("trained_at")} |
+| Features | {len(meta.get("features", []))} |
+| Positive rate | {pos_rate} |
 
 ---
 
@@ -179,8 +183,8 @@ block = f"""
 
 | Metric | Latest | Trend |
 |--------|--------|-------|
-| ROC-AUC | {latest["roc_auc"]:.4f} | {roc_trend} |
-| PR-AUC | {latest["pr_auc"]:.4f} | {pr_trend} |
+| ROC-AUC | {latest_roc} | {roc_trend} |
+| PR-AUC | {latest_pr} | {pr_trend} |
 
 ---
 
@@ -220,7 +224,6 @@ if marker in text:
     out = base + block
 else:
     out = text.rstrip() + "\n" + block
-
 
 README.write_text(out)
 
