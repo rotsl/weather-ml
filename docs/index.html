@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>Weather ML Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body {
+  font-family: system-ui, Arial;
+  background: #fafafa;
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+  gap: 15px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.ok { color: green; }
+.warn { color: red; }
+
+.hidden { display: none; }
+
+</style>
+
+</head>
+
+<body>
+
+<h1>🌧️ Weather ML Dashboard</h1>
+
+<small>
+Last updated: 2026-02-22 22:13 UTC | Static / No API calls
+</small>
+
+<div class="grid">
+
+<div class="card">
+<h2>🧠 Model</h2>
+<ul>
+<li>Horizon: D_next_6h (6 h)</li>
+<li>Features: 17</li>
+<li>Positive rate: 0.3182</li>
+<li>Last trained: 2026-02-22T21:22:55.483029</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>🚨 Health</h2>
+<p class="ok">Healthy</p>
+</div>
+
+<div class="card">
+<h2>📁 Dataset</h2>
+<ul>
+<li>Rows: 17,568</li>
+<li>Range: 2024-02-22 → 2026-02-22</li>
+</ul>
+</div>
+
+</div>
+
+<div class="card">
+<h2>📈 Performance History</h2>
+<canvas id="perfChart"></canvas>
+</div>
+
+<div class="card hidden" id="rawdata">
+<h2>📄 Metrics Table</h2>
+<table border="1" cellpadding="6">
+<tr><th>Date</th><th>ROC-AUC</th><th>PR-AUC</th></tr>
+
+<tr>
+<td>2026-02-22</td>
+<td>0.9178</td>
+<td>0.8178</td>
+</tr>
+
+<tr>
+<td>2026-02-22</td>
+<td>0.9178</td>
+<td>0.8178</td>
+</tr>
+
+<tr>
+<td>2026-02-22</td>
+<td>0.9178</td>
+<td>0.8178</td>
+</tr>
+
+</table>
+</div>
+
+<script>
+
+const dates = ["2026-02-22", "2026-02-22", "2026-02-22"];
+const roc = [0.9178, 0.9178, 0.9178];
+const pr = [0.8178, 0.8178, 0.8178];
+
+const ctx = document.getElementById("perfChart");
+
+new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: dates,
+    datasets: [
+      { label: "ROC-AUC", data: roc, borderColor: "#1976d2", tension: 0.3 },
+      { label: "PR-AUC", data: pr, borderColor: "#2e7d32", tension: 0.3 }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: { y: { min: 0, max: 1 } }
+  }
+});
+
+</script>
+
+</body>
+</html>
