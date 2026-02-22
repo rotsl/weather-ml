@@ -1,6 +1,12 @@
 # weather-ml
 
 ---
+[![Retrain Workflow](https://github.com/rotsl/weather-ml/actions/workflows/retrain.yml/badge.svg)](https://github.com/rotsl/weather-ml/actions/workflows/retrain.yml)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen?logo=github)](https://rotsl.github.io/weather-ml/)
+[![Last Commit](https://img.shields.io/github/last-commit/rotsl/weather-ml)](https://github.com/rotsl/weather-ml)
+[![Repo Size](https://img.shields.io/github/repo-size/rotsl/weather-ml)](https://github.com/rotsl/weather-ml)
+
+---
 
 ## 🌐 Public Dashboard
 
