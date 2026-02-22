@@ -6,7 +6,7 @@ on:
     - cron: "0 2 */2 * *"
 
   workflow_dispatch:
-  
+
 permissions:
   contents: write
 
@@ -76,7 +76,12 @@ jobs:
           echo "Starting retrain..."
           python -u scripts/update_data_and_retrain.py
 
-
+      # ----------------------------
+      # Update README
+      # ----------------------------
+      - name: Update README
+        run: |
+          python scripts/update_readme.py
       # ----------------------------
       # Commit Results
       # ----------------------------
@@ -90,6 +95,7 @@ jobs:
 
           git add models/
           git add data/processed/
+          git add README.md
 
           git commit -m "Auto retrain: $(date -u +'%Y-%m-%d %H:%M UTC')" || echo "No changes"
 
