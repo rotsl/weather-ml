@@ -7,8 +7,16 @@ on:
 
   workflow_dispatch:
 
+
+# Prevent overlapping runs (quota safety)
+concurrency:
+  group: retrain-weather
+  cancel-in-progress: false
+
+
 permissions:
   contents: write
+
 
 jobs:
   retrain:
@@ -22,7 +30,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # needed for pushing back
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
 
       # ----------------------------
@@ -44,7 +53,7 @@ jobs:
 
 
       # ----------------------------
-      # Debug Environment
+      # Debug Environment (optional, keep for now)
       # ----------------------------
       - name: Debug environment
         run: |
@@ -76,15 +85,19 @@ jobs:
           echo "Starting retrain..."
           python -u scripts/update_data_and_retrain.py
 
+
       # ----------------------------
-      # Update README
+      # Update README (no API calls)
       # ----------------------------
       - name: Update README
         env:
           VISUAL_CROSSING_KEY: ${{ secrets.VISUAL_CROSSING_KEY }}
           VISUAL_CROSSING_LOCATION: ${{ secrets.VISUAL_CROSSING_LOCATION }}
+          ENABLE_LIVE_FORECAST: "0"
         run: |
           python scripts/update_readme.py
+
+
       # ----------------------------
       # Commit Results
       # ----------------------------
@@ -100,6 +113,6 @@ jobs:
           git add data/processed/
           git add README.md
 
-          git commit -m "Auto retrain: $(date -u +'%Y-%m-%d %H:%M UTC')" || echo "No changes"
+          git commit -m "Auto retrain: $(date -u +'%Y-%m-%d %H:%M UTC')" || echo "No changes to commit"
 
           git push
