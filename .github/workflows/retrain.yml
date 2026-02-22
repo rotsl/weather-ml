@@ -93,7 +93,13 @@ jobs:
       run: |
         python scripts/update_readme.py
 
-
+    # ============================
+    # Monthly Report
+    # ============================
+    - name: Generate monthly report
+      run: |
+        python scripts/monthly_report.py
+        
     # ============================
     # Commit
     # ============================
