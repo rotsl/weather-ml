@@ -89,8 +89,45 @@ if not warning:
 
 API_KEY = os.getenv("VISUAL_CROSSING_KEY")
 LOCATION = os.getenv("VISUAL_CROSSING_LOCATION")
+ENABLE_LIVE_FORECAST = os.getenv("ENABLE_LIVE_FORECAST", "0") == "1"
 
-forecast = "Unavailable"
+if not ENABLE_LIVE_FORECAST:
+    forecast = "Disabled (free-tier safe mode)"
+elif not API_KEY or not LOCATION:
+    forecast = "Unavailable (missing VISUAL_CROSSING_KEY or VISUAL_CROSSING_LOCATION)"
+else:
+    # Do the VC current fetch
+    forecast = "Unavailable"
+    try:
+        url = (
+            "https://weather.visualcrossing.com/"
+            "VisualCrossingWebServices/rest/services/timeline/"
+            f"{urllib.parse.quote_plus(LOCATION)}"
+            "?unitGroup=metric&include=current&contentType=json"
+            f"&key={API_KEY}"
+        )
+
+        with urllib.request.urlopen(url, timeout=30) as r:
+            js = json.loads(r.read())
+
+        cur = js.get("currentConditions", {})
+        rain_p = cur.get("precipprob", 0)
+        temp = cur.get("temp")
+        hum = cur.get("humidity")
+
+        # Be robust if any field is missing
+        parts = []
+        if rain_p is not None:
+            parts.append(f"{rain_p}% rain")
+        if temp is not None:
+            parts.append(f"{temp}°C")
+        if hum is not None:
+            parts.append(f"{hum}% RH")
+
+        forecast = " | ".join(parts) if parts else "Unavailable (no currentConditions fields)"
+
+    except Exception:
+        forecast = "API error"
 
 if API_KEY and LOCATION:
 

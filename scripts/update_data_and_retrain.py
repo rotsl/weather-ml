@@ -26,8 +26,8 @@ BASE_URL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/se
 UNIT_GROUP = "metric"
 CONTENT_TYPE = "json"
 
-PULL_DAYS = 3
-LIVE_HOURS_KEEP = 72
+PULL_DAYS = 1
+LIVE_HOURS_KEEP = 48
 RECLEAN_DAYS = 14
 
 HORIZON_NAME = "D_next_6h"
@@ -77,7 +77,7 @@ print("Using location:", LOCATION)
 
 def fetch_vc_json(start_date: str, end_date: str) -> dict:
 
-    include = "hours,current"
+    include = "hours"
 
     url = (
         f"{BASE_URL}"
