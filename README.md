@@ -6,7 +6,7 @@
 [![Last Commit](https://img.shields.io/github/last-commit/rotsl/weather-ml)](https://github.com/rotsl/weather-ml)
 [![Repo Size](https://img.shields.io/github/repo-size/rotsl/weather-ml)](https://github.com/rotsl/weather-ml)
 ![Workflow Uptime](https://img.shields.io/github/actions/workflow/status/rotsl/weather-ml/retrain.yml?label=Automation&logo=github)
-![Dataset Updated](https://img.shields.io/github/last-commit/rotsl/weather-ml/data/processed/weather_hourly_clean.csv?label=Dataset&logo=databricks)
+![Dataset Updated](https://img.shields.io/github/last-commit/rotsl/weather-ml/main?label=Dataset&logo=databricks)
 ![Model Health](https://img.shields.io/badge/Model-Healthy-green)
 
 ---
@@ -195,7 +195,12 @@ If degradation is detected, warnings appear in:
 - Metrics history
 
 ---
+### 📅 Monthly Reports
 
+Performance summaries are generated automatically:
+reports/report_YYYY_MM.csv
+
+These track long-term stability and drift.
 ---
 ### Notes
 - Automated workflows are quota-safe (~12 records/day).
