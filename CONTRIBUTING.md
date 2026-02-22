@@ -27,7 +27,7 @@ Contributions are welcome in the areas of:
 
 ---
 
-📌 Workflow
+## 📌 Workflow
 1.	Create a feature branch:
     
     ```bash
@@ -41,7 +41,7 @@ Contributions are welcome in the areas of:
 
 ---
 
-📋 Code Standards
+## 📋 Code Standards
 	•	Use Python 3.9+
 	•	Follow PEP8
 	•	Add docstrings
@@ -50,7 +50,7 @@ Contributions are welcome in the areas of:
 
 ---
 
-🧪 Testing
+## 🧪 Testing
 
 Before submitting:
 	•	Run training locally if applicable
@@ -59,7 +59,7 @@ Before submitting:
 
 ---
 
-🤝 Review Process
+## 🤝 Review Process
 
 All pull requests are reviewed for:
 	•	Correctness
