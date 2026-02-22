@@ -121,6 +121,9 @@ _Last updated automatically by GitHub Actions._
 
 ---
 
+
+---
+
 ## 📊 Live ML Dashboard (Auto-Updated)
 
 ### 🧠 Model
@@ -128,7 +131,7 @@ _Last updated automatically by GitHub Actions._
 | Field | Value |
 |-------|-------|
 | Horizon | D_next_6h (6h) |
-| Last trained | 2026-02-22T18:44:17.461952 |
+| Last trained | 2026-02-22T21:22:55.483029 |
 | Features | 17 |
 | Positive rate | 0.3182 |
 
@@ -138,8 +141,8 @@ _Last updated automatically by GitHub Actions._
 
 | Metric | Latest | Trend |
 |--------|--------|-------|
-| ROC-AUC | 0.9178 | n/a |
-| PR-AUC | 0.8178 | n/a |
+| ROC-AUC | 0.9178 | ▁▁▁ |
+| PR-AUC | 0.8178 | ▁▁▁ |
 
 ---
 
@@ -151,7 +154,7 @@ _Last updated automatically by GitHub Actions._
 
 ### 🌧️ Current Weather
 
-> 0.0% rain | 28.0°C | 83.8% RH
+> 0.0% rain | 26.0°C | 88.8% RH
 
 ---
 
@@ -162,4 +165,4 @@ _Last updated automatically by GitHub Actions._
 | Rows | 17,568 |
 | Range | 2024-02-22 → 2026-02-22 |
 
-_Last updated: 2026-02-22 18:44 UTC_
+_Last updated: 2026-02-22 21:22 UTC_
