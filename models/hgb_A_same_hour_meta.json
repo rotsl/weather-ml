@@ -1,0 +1,36 @@
+{
+  "horizon": "A_same_hour",
+  "hours": 0,
+  "rows": 17568,
+  "features": [
+    "temp",
+    "feelslike",
+    "dew",
+    "humidity",
+    "precipprob",
+    "snow",
+    "snowdepth",
+    "windgust",
+    "windspeed",
+    "winddir",
+    "sealevelpressure",
+    "cloudcover",
+    "visibility",
+    "solarradiation",
+    "solarenergy",
+    "uvindex",
+    "severerisk"
+  ],
+  "threshold": 0.05,
+  "roc_auc": 1.0,
+  "pr_auc": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "confusion": {
+    "tn": 2553,
+    "fp": 0,
+    "fn": 0,
+    "tp": 83
+  }
+}

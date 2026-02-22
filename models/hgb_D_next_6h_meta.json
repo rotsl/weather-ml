@@ -1,0 +1,36 @@
+{
+  "horizon": "D_next_6h",
+  "hours": 6,
+  "rows": 17567,
+  "features": [
+    "temp",
+    "feelslike",
+    "dew",
+    "humidity",
+    "precipprob",
+    "snow",
+    "snowdepth",
+    "windgust",
+    "windspeed",
+    "winddir",
+    "sealevelpressure",
+    "cloudcover",
+    "visibility",
+    "solarradiation",
+    "solarenergy",
+    "uvindex",
+    "severerisk"
+  ],
+  "threshold": 0.05,
+  "roc_auc": 0.8512690127522664,
+  "pr_auc": 0.38078731482324035,
+  "precision": 0.31929046563192903,
+  "recall": 0.5950413223140496,
+  "f1": 0.4155844155844156,
+  "confusion": {
+    "tn": 2087,
+    "fp": 307,
+    "fn": 98,
+    "tp": 144
+  }
+}

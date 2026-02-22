@@ -1,28 +1,40 @@
-# Virtual env
+# -------------------------
+# Virtual Environment
+# -------------------------
 weather/
 
-# Data (ignore dataset contents, keep folder placeholders)
-data/*
-!data/.gitkeep
-!data/raw/
-!data/processed/
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
+# -------------------------
+# Raw data (ignore)
+# -------------------------
+data/raw/
 
-# Models
-models/
+# -------------------------
+# Processed data (keep)
+# -------------------------
 
+
+# -------------------------
+# Models (keep)
+# -------------------------
+
+
+# -------------------------
 # Python
+# -------------------------
 __pycache__/
 *.pyc
 
+# -------------------------
 # Jupyter
+# -------------------------
 .ipynb_checkpoints/
 
+# -------------------------
 # OS
+# -------------------------
 .DS_Store
 
+# -------------------------
 # Secrets
+# -------------------------
 .env
