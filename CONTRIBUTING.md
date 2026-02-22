@@ -35,9 +35,9 @@ Contributions are welcome in the areas of:
     ```
 
 2.	Make changes
-	3.	Run tests / scripts locally
-	4.	Commit with clear messages
-	5.	Open a Pull Request
+3.	Run tests / scripts locally
+4.	Commit with clear messages
+5.	Open a Pull Request
 
 ⸻
 
