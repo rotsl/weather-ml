@@ -25,7 +25,7 @@ Contributions are welcome in the areas of:
      ```
 5.	Create .env for local testing
 
-⸻
+---
 
 📌 Workflow
 1.	Create a feature branch:
@@ -39,7 +39,7 @@ Contributions are welcome in the areas of:
 4.	Commit with clear messages
 5.	Open a Pull Request
 
-⸻
+---
 
 📋 Code Standards
 	•	Use Python 3.9+
@@ -48,7 +48,7 @@ Contributions are welcome in the areas of:
 	•	Avoid hardcoded secrets
 	•	Do not commit .env
 
-⸻
+---
 
 🧪 Testing
 
@@ -57,7 +57,7 @@ Before submitting:
 	•	Verify dashboard export
 	•	Check workflow compatibility
 
-⸻
+---
 
 🤝 Review Process
 
@@ -68,6 +68,6 @@ All pull requests are reviewed for:
 	•	Resource usage
 	•	Documentation quality
 
-⸻
+---
 
 Thank you for helping improve weather-ml
