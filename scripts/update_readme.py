@@ -1,97 +1,190 @@
 import json
-from pathlib import Path
 import pandas as pd
+import numpy as np
+import urllib.request
+import urllib.parse
+import os
+from pathlib import Path
 from datetime import datetime
 
 
-README_PATH = Path("README.md")
-DATA_PATH = Path("data/processed/weather_hourly_clean.csv")
-MODELS_DIR = Path("models")
+README = Path("README.md")
+DATA = Path("data/processed/weather_hourly_clean.csv")
+MODELS = Path("models")
+HISTORY = MODELS / "history" / "metrics_history.csv"
 
 
-# -------------------------------------------------
-# Load latest model metadata
-# -------------------------------------------------
+# =====================================================
+# Utils
+# =====================================================
 
-meta_files = sorted(
-    MODELS_DIR.glob("*_current_meta.json"),
-    reverse=True
-)
+def sparkline(series, width=12):
 
-if not meta_files:
-    raise RuntimeError("No model metadata found")
+    ticks = "▁▂▃▄▅▆▇█"
 
-latest_meta_path = meta_files[0]
-meta = json.loads(latest_meta_path.read_text())
+    if len(series) < 2:
+        return "n/a"
+
+    s = np.array(series[-width:], dtype=float)
+
+    s = (s - s.min()) / (s.max() - s.min() + 1e-9)
+
+    return "".join(ticks[int(x * 7)] for x in s)
 
 
-# -------------------------------------------------
-# Load dataset info
-# -------------------------------------------------
+# =====================================================
+# Load metadata
+# =====================================================
 
-df = pd.read_csv(DATA_PATH, parse_dates=["datetime"])
+meta_file = list(MODELS.glob("*_current_meta.json"))[0]
+meta = json.loads(meta_file.read_text())
+
+
+# =====================================================
+# Dataset info
+# =====================================================
+
+df = pd.read_csv(DATA, parse_dates=["datetime"])
 
 rows = len(df)
-start_date = df["datetime"].min().strftime("%Y-%m-%d")
-end_date = df["datetime"].max().strftime("%Y-%m-%d")
+start = df["datetime"].min().strftime("%Y-%m-%d")
+end = df["datetime"].max().strftime("%Y-%m-%d")
 
 
-# -------------------------------------------------
-# Extract metrics
-# -------------------------------------------------
+# =====================================================
+# Metrics history
+# =====================================================
 
-trained_at = meta["trained_at"]
-roc = meta.get("roc_auc", meta.get("roc_auc_val_timeforward", "N/A"))
-pr = meta.get("pr_auc", meta.get("pr_auc_val_timeforward", "N/A"))
-pos_rate = meta.get("positive_rate", "N/A")
-horizon = meta["horizon"]
-hours = meta["hours"]
-features = len(meta["features"])
+hist = pd.read_csv(HISTORY, parse_dates=["timestamp"])
+
+roc_trend = sparkline(hist["roc_auc"])
+pr_trend = sparkline(hist["pr_auc"])
+
+latest = hist.iloc[-1]
+prev = hist.iloc[-2] if len(hist) > 1 else None
 
 
-# -------------------------------------------------
-# Build status section
-# -------------------------------------------------
+# =====================================================
+# Degradation check
+# =====================================================
 
-status_block = f"""
+warning = ""
+
+if prev is not None:
+
+    if latest["roc_auc"] < prev["roc_auc"] - 0.05:
+        warning = "🚨 ROC-AUC dropped > 0.05"
+
+    if latest["pr_auc"] < prev["pr_auc"] - 0.05:
+        warning += " | 🚨 PR-AUC dropped > 0.05"
+
+
+if not warning:
+    warning = "✅ No degradation detected"
+
+
+# =====================================================
+# Live forecast
+# =====================================================
+
+API_KEY = os.getenv("VISUAL_CROSSING_KEY")
+LOCATION = os.getenv("VISUAL_CROSSING_LOCATION")
+
+forecast = "Unavailable"
+
+if API_KEY and LOCATION:
+
+    url = (
+        "https://weather.visualcrossing.com/"
+        "VisualCrossingWebServices/rest/services/timeline/"
+        f"{urllib.parse.quote_plus(LOCATION)}"
+        "?unitGroup=metric&include=current&contentType=json"
+        f"&key={API_KEY}"
+    )
+
+    try:
+        with urllib.request.urlopen(url, timeout=30) as r:
+            js = json.loads(r.read())
+
+        cur = js["currentConditions"]
+
+        rain_p = cur.get("precipprob", 0)
+        temp = cur.get("temp")
+        hum = cur.get("humidity")
+
+        forecast = f"{rain_p}% rain | {temp}°C | {hum}% RH"
+
+    except Exception:
+        forecast = "API error"
+
+
+# =====================================================
+# Build dashboard
+# =====================================================
+
+block = f"""
 ---
 
-## 📊 Live Model Status (Auto-Updated)
+## 📊 Live ML Dashboard (Auto-Updated)
+
+### 🧠 Model
 
 | Field | Value |
 |-------|-------|
-| Last retrain (UTC) | {trained_at} |
-| Active horizon | {horizon} ({hours}h) |
-| Dataset rows | {rows:,} |
-| Data range | {start_date} → {end_date} |
-| ROC-AUC | {roc:.4f} |
-| PR-AUC | {pr:.4f} |
-| Positive rate | {pos_rate:.4f} |
-| Features used | {features} |
+| Horizon | {meta["horizon"]} ({meta["hours"]}h) |
+| Last trained | {meta["trained_at"]} |
+| Features | {len(meta["features"])} |
+| Positive rate | {meta["positive_rate"]:.4f} |
 
-_Last updated automatically by GitHub Actions._
+---
+
+### 📉 Performance
+
+| Metric | Latest | Trend |
+|--------|--------|-------|
+| ROC-AUC | {latest["roc_auc"]:.4f} | {roc_trend} |
+| PR-AUC | {latest["pr_auc"]:.4f} | {pr_trend} |
+
+---
+
+### 🚨 Health
+
+> {warning}
+
+---
+
+### 🌧️ Current Weather
+
+> {forecast}
+
+---
+
+### 📁 Dataset
+
+| Field | Value |
+|-------|-------|
+| Rows | {rows:,} |
+| Range | {start} → {end} |
+
+_Last updated: {datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")}_
 """
 
 
-# -------------------------------------------------
-# Replace or append section
-# -------------------------------------------------
+# =====================================================
+# Inject into README
+# =====================================================
 
-if README_PATH.exists():
-    text = README_PATH.read_text()
-else:
-    text = "# weather-ml\n\n"
+text = README.read_text() if README.exists() else "# weather-ml\n"
 
-
-marker = "## 📊 Live Model Status (Auto-Updated)"
+marker = "## 📊 Live ML Dashboard (Auto-Updated)"
 
 if marker in text:
-    before = text.split(marker)[0]
-    new_text = before + status_block
+    base = text.split(marker)[0]
+    out = base + block
 else:
-    new_text = text.rstrip() + "\n" + status_block
+    out = text.rstrip() + "\n" + block
 
 
-README_PATH.write_text(new_text)
+README.write_text(out)
 
-print("✅ README updated")
+print("✅ README dashboard updated")

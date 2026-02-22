@@ -374,5 +374,27 @@ def main():
     print("PR :", res.pr_auc)
 
 
+    # -------------------------
+    # Append metrics history
+    # -------------------------
+
+    HISTORY_PATH = MODELS_DIR / "history" / "metrics_history.csv"
+    HISTORY_PATH.parent.mkdir(exist_ok=True)
+
+    row = {
+        "timestamp": meta["trained_at"],
+        "horizon": meta["horizon"],
+        "roc_auc": meta["roc_auc"],
+        "pr_auc": meta["pr_auc"],
+        "positive_rate": meta["positive_rate"],
+    }
+
+    df_row = pd.DataFrame([row])
+
+    if HISTORY_PATH.exists():
+        df_row.to_csv(HISTORY_PATH, mode="a", header=False, index=False)
+    else:
+        df_row.to_csv(HISTORY_PATH, index=False)
+
 if __name__ == "__main__":
     main()
