@@ -1,9 +1,15 @@
 # Virtual env
 weather/
 
-# Data
-data/raw/
-data/processed/
+# Data (ignore dataset contents, keep folder placeholders)
+data/*
+!data/.gitkeep
+!data/raw/
+!data/processed/
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
 
 # Models
 models/
