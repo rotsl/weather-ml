@@ -29,7 +29,8 @@ Contributions are welcome in the areas of:
 
 📌 Workflow
 1.	Create a feature branch:
-    bash ```
+    
+    ```bash
      git checkout -b feature/my-feature
     ```
 
