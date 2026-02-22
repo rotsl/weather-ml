@@ -197,8 +197,8 @@ If degradation is detected, warnings appear in:
 ---
 ### 📅 Monthly Reports
 
-Performance summaries are generated automatically:
-reports/report_YYYY_MM.csv
+Performance summaries are generated automatically and stored in:
+`reports/report_YYYY_MM.csv`
 
 These track long-term stability and drift.
 ---
