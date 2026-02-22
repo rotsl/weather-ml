@@ -101,3 +101,20 @@ jupyter notebook notebooks/interactive_dashboard.ipynb
 
 - Scripts read location from `VISUAL_CROSSING_LOCATION` in `.env`.
 - `interactive_dashboard.ipynb` includes horizon selection, threshold/date controls, live overlay toggle, refresh button, and schema inspector for live API vs model features.
+
+---
+
+## 📊 Live Model Status (Auto-Updated)
+
+| Field | Value |
+|-------|-------|
+| Last retrain (UTC) | 2026-02-22T18:26:59.129808 |
+| Active horizon | D_next_6h (6h) |
+| Dataset rows | 17,568 |
+| Data range | 2024-02-22 → 2026-02-22 |
+| ROC-AUC | 0.9178 |
+| PR-AUC | 0.8178 |
+| Positive rate | 0.3182 |
+| Features used | 17 |
+
+_Last updated automatically by GitHub Actions._
