@@ -1,45 +1,43 @@
 # weather-ml
 
+---
+
+## 🌐 Public Dashboard
+
+➡️ Live dashboard (auto-updated, no API calls):
+
+https://rotsl.github.io/weather-ml/
+
+---
+
 Hourly rain forecasting project using Visual Crossing weather data and scikit-learn gradient boosting models for multiple prediction horizons.
 
 ## Project Structure
 
+## 📁 Project Structure
+
 ```text
 weather-ml/
-├── .env
+├── .env                         # Local secrets (not committed)
 ├── README.md
 ├── requirements.txt
+├── docs/                        # GitHub Pages dashboard
+│   └── index.html
 ├── data/
 │   ├── raw/
-│   │   ├── copyofdata.csv
-│   │   ├── vc_progress.txt
-│   │   └── visual_crossing_2024_2026_hourly.csv
 │   └── processed/
 │       └── weather_hourly_clean.csv
 ├── models/
-│   ├── hgb_A_same_hour.pkl
-│   ├── hgb_A_same_hour_meta.json
-│   ├── hgb_B_next_1h.pkl
-│   ├── hgb_B_next_1h_meta.json
-│   ├── hgb_C_next_3h.pkl
-│   ├── hgb_C_next_3h_meta.json
-│   ├── hgb_D_next_6h.pkl
-│   ├── hgb_D_next_6h_meta.json
-│   └── metrics_multihorizon.csv
+│   ├── hgb_*_current.pkl
+│   ├── hgb_*_previous.pkl
+│   ├── *_meta.json
+│   ├── history/
+│   │   └── metrics_history.csv
+│   └── snapshots/
 ├── notebooks/
-│   ├── interactive_dashboard.ipynb
-│   └── model_analysis.ipynb
 ├── scripts/
-│   ├── download_visual_crossing.py
-│   ├── clean_visual_crossing.py
-│   ├── train_boosting_multihorizon.py
-│   └── predict_live_vc.py
-├── src/
-│   ├── data/
-│   ├── features/
-│   ├── models/
-│   └── utils/
-└── weather/  # local virtual environment directory in this repo
+│   └── *.py
+└── weather/                     # Local virtual environment
 ```
 
 ## Environment Setup
@@ -166,3 +164,10 @@ _Last updated automatically by GitHub Actions._
 | Range | 2024-02-22 → 2026-02-22 |
 
 _Last updated: 2026-02-22 21:22 UTC_
+
+---
+### Notes
+- Automated workflows are quota-safe (~12 records/day).
+- Public dashboard makes no external API requests.
+- Secrets are stored only in GitHub Actions.
+---
