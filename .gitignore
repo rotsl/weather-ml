@@ -1,0 +1,22 @@
+# Virtual env
+weather/
+
+# Data
+data/raw/
+data/processed/
+
+# Models
+models/
+
+# Python
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Secrets
+.env
