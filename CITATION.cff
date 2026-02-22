@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it."
+
+title: "weather-ml: Automated Rain Forecasting System"
+
+authors:
+  - name: "Rotsl"
+  
+
+version: "1.0.0"
+
+date-released: 2026-02-22
+
+url: "https://github.com/rotsl/weather-ml"
+
+license: MIT

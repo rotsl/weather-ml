@@ -206,4 +206,23 @@ Performance summaries are generated automatically and stored in:
 - Automated workflows are quota-safe (~12 records/day).
 - Public dashboard makes no external API requests.
 - Secrets are stored only in GitHub Actions.
+
 ---
+
+## 📜 License
+
+This project is licensed under the MIT License.
+
+See `LICENSE` for details.
+
+---
+
+## 🤝 Contributing
+
+See `CONTRIBUTING.md` for guidelines.
+
+---
+
+## 🔐 Security
+
+See `SECURITY.md` for reporting vulnerabilities.
