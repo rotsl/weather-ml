@@ -200,7 +200,7 @@ If degradation is detected, warnings appear in:
 Performance summaries are generated automatically and stored in:
 `reports/report_YYYY_MM.csv`
 
-These track long-term stability and drift.
+- These track long-term stability and drift.
 ---
 ### Notes
 - Automated workflows are quota-safe (~12 records/day).
