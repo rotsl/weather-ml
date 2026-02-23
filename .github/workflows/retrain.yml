@@ -125,3 +125,14 @@ jobs:
         git commit -m "Auto retrain + dashboard update ($(date -u +'%Y-%m-%d %H:%M UTC'))" || echo "No changes"
 
         git push
+
+    # ----------------------------
+    # Mirror to GitLab
+    # ----------------------------
+    - name: Push to GitLab mirror
+      run: |
+        git remote remove gitlab || true
+
+        git remote add gitlab https://${{ secrets.GITLAB_USERNAME }}:${{ secrets.GITLAB_TOKEN }}@gitlab.com/${{ secrets.GITLAB_USERNAME }}/weather-ml.git
+
+        git push gitlab main --force   
