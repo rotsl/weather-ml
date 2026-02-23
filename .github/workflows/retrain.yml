@@ -93,6 +93,13 @@ jobs:
       run: |
         python scripts/update_readme.py
 
+    # ----------------------------
+    # Update Changelog
+    # ----------------------------
+    - name: Update changelog
+      run: |
+        python scripts/update_changelog.py     
+
     # ============================
     # Monthly Report
     # ============================
