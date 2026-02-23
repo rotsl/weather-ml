@@ -10,8 +10,8 @@
 ![Model Health](https://img.shields.io/badge/Model-Healthy-green)
 
 ---
-
-
+[![DOI](https://zenodo.org/badge/1163996139.svg)](https://doi.org/10.5281/zenodo.18738567)
+---
 ## 🪟 Automated Rain-Responsive Shutter System (Raspberry Pi)
 
 This project n includes a physical automation layer that controls  shutters for massive areacnut drying areas using a Raspberry Pi and the trained ML model.
