@@ -128,6 +128,8 @@ jupyter notebook notebooks/interactive_dashboard.ipynb
 
 ## 🛠️ Hardware Setup (Raspberry Pi Shutter Control)
 
+> 🔩 For full details for hardware refer [Hardware_Setup](https://github.com/rotsl/weather-ml/blob/main/hardware/hardware_setup.md)
+
 ### Requirements
 
 - Raspberry Pi (3/4/5)
