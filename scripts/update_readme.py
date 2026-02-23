@@ -4,9 +4,14 @@ import numpy as np
 import urllib.request
 import urllib.parse
 import os
+import re
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
+
+# =====================================================
+# Paths
+# =====================================================
 
 README = Path("README.md")
 DATA = Path("data/processed/weather_hourly_clean.csv")
@@ -33,6 +38,24 @@ def sparkline(series, width=12):
     return "".join(ticks[int(x * 7)] for x in s)
 
 
+def replace_section(text, start_marker, end_marker, new_block):
+    """
+    Replace content between two markers (inclusive start).
+    """
+    pattern = re.compile(
+        rf"{re.escape(start_marker)}.*?{re.escape(end_marker)}",
+        re.DOTALL,
+    )
+
+    match = pattern.search(text)
+
+    if not match:
+        print(f"⚠️ Section not found: {start_marker}")
+        return text
+
+    return text[: match.start()] + new_block + text[match.end():]
+
+
 # =====================================================
 # Load metadata
 # =====================================================
@@ -40,10 +63,9 @@ def sparkline(series, width=12):
 meta_files = list(MODELS.glob("*_current_meta.json"))
 
 if not meta_files:
-    raise RuntimeError("No current model metadata found.")
+    raise RuntimeError("No current model metadata found")
 
-meta_file = meta_files[0]
-meta = json.loads(meta_file.read_text())
+meta = json.loads(meta_files[0].read_text())
 
 
 # =====================================================
@@ -65,6 +87,11 @@ else:
 # Metrics history
 # =====================================================
 
+latest = None
+prev = None
+roc_trend = "n/a"
+pr_trend = "n/a"
+
 if HISTORY.exists():
     hist = pd.read_csv(HISTORY, parse_dates=["timestamp"])
 
@@ -74,23 +101,13 @@ if HISTORY.exists():
 
         latest = hist.iloc[-1]
         prev = hist.iloc[-2] if len(hist) > 1 else None
-    else:
-        roc_trend = "n/a"
-        pr_trend = "n/a"
-        latest = None
-        prev = None
-else:
-    roc_trend = "n/a"
-    pr_trend = "n/a"
-    latest = None
-    prev = None
 
 
 # =====================================================
 # Degradation check
 # =====================================================
 
-warning = "No history yet."
+warning = "No history yet"
 
 if latest is not None:
 
@@ -110,19 +127,22 @@ if latest is not None:
 
 
 # =====================================================
-# Live forecast (Free-tier safe)
+# Live forecast (Quota-safe)
 # =====================================================
 
 API_KEY = os.getenv("VISUAL_CROSSING_KEY")
 LOCATION = os.getenv("VISUAL_CROSSING_LOCATION")
-ENABLE_LIVE_FORECAST = os.getenv("ENABLE_LIVE_FORECAST", "0") == "1"
+ENABLE_LIVE = os.getenv("ENABLE_LIVE_FORECAST", "0") == "1"
 
-if not ENABLE_LIVE_FORECAST:
+if not ENABLE_LIVE:
     forecast = "Disabled (free-tier safe mode)"
+
 elif not API_KEY or not LOCATION:
-    forecast = "Unavailable (missing VISUAL_CROSSING_KEY or VISUAL_CROSSING_LOCATION)"
+    forecast = "Unavailable (missing credentials)"
+
 else:
     forecast = "Unavailable"
+
     try:
         url = (
             "https://weather.visualcrossing.com/"
@@ -137,13 +157,14 @@ else:
 
         cur = js.get("currentConditions", {})
 
-        rain_p = cur.get("precipprob")
+        rain = cur.get("precipprob")
         temp = cur.get("temp")
         hum = cur.get("humidity")
 
         parts = []
-        if rain_p is not None:
-            parts.append(f"{rain_p}% rain")
+
+        if rain is not None:
+            parts.append(f"{rain}% rain")
         if temp is not None:
             parts.append(f"{temp}°C")
         if hum is not None:
@@ -156,16 +177,34 @@ else:
 
 
 # =====================================================
-# Build dashboard
+# Build Live Model Status block
 # =====================================================
 
-latest_roc = f"{latest['roc_auc']:.4f}" if latest is not None else "N/A"
-latest_pr = f"{latest['pr_auc']:.4f}" if latest is not None else "N/A"
-pos_rate = f"{meta.get('positive_rate', 0):.4f}" if "positive_rate" in meta else "N/A"
+status_block = f"""
+## 📊 Live Model Status (Auto-Updated)
 
-block = f"""
+| Field | Value |
+|-------|-------|
+| Last retrain (UTC) | {meta.get("trained_at")} |
+| Active horizon | {meta.get("horizon")} ({meta.get("hours")}h) |
+| Dataset rows | {rows:,} |
+| Data range | {start} → {end} |
+| ROC-AUC | {latest["roc_auc"]:.4f if latest is not None else "N/A"} |
+| PR-AUC | {latest["pr_auc"]:.4f if latest is not None else "N/A"} |
+| Positive rate | {meta.get("positive_rate", 0):.4f} |
+| Features used | {len(meta.get("features", []))} |
+
+_Last updated automatically by GitHub Actions._
+
 ---
+"""
 
+
+# =====================================================
+# Build Dashboard block
+# =====================================================
+
+dashboard_block = f"""
 ## 📊 Live ML Dashboard (Auto-Updated)
 
 ### 🧠 Model
@@ -175,7 +214,7 @@ block = f"""
 | Horizon | {meta.get("horizon")} ({meta.get("hours")}h) |
 | Last trained | {meta.get("trained_at")} |
 | Features | {len(meta.get("features", []))} |
-| Positive rate | {pos_rate} |
+| Positive rate | {meta.get("positive_rate", 0):.4f} |
 
 ---
 
@@ -183,8 +222,8 @@ block = f"""
 
 | Metric | Latest | Trend |
 |--------|--------|-------|
-| ROC-AUC | {latest_roc} | {roc_trend} |
-| PR-AUC | {latest_pr} | {pr_trend} |
+| ROC-AUC | {latest["roc_auc"]:.4f if latest is not None else "N/A"} | {roc_trend} |
+| PR-AUC | {latest["pr_auc"]:.4f if latest is not None else "N/A"} | {pr_trend} |
 
 ---
 
@@ -207,24 +246,37 @@ block = f"""
 | Rows | {rows:,} |
 | Range | {start} → {end} |
 
-_Last updated: {datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")}_
+_Last updated: {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}_
+
+---
 """
 
 
 # =====================================================
-# Inject into README
+# Update README safely
 # =====================================================
 
-text = README.read_text() if README.exists() else "# weather-ml\n"
+text = README.read_text(encoding="utf-8")
 
-marker = "## 📊 Live ML Dashboard (Auto-Updated)"
 
-if marker in text:
-    base = text.split(marker)[0]
-    out = base + block
-else:
-    out = text.rstrip() + "\n" + block
+# Replace Live Model Status
+text = replace_section(
+    text,
+    "## 📊 Live Model Status (Auto-Updated)",
+    "_Last updated automatically by GitHub Actions._\n\n---",
+    status_block,
+)
 
-README.write_text(out)
 
-print("✅ README dashboard updated")
+# Replace Dashboard
+text = replace_section(
+    text,
+    "## 📊 Live ML Dashboard (Auto-Updated)",
+    "_Last updated:",
+    dashboard_block,
+)
+
+
+README.write_text(text, encoding="utf-8")
+
+print("✅ README updated safely")

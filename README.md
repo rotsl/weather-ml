@@ -11,11 +11,29 @@
 
 ---
 
-## 🌐 Public Dashboard
 
-➡️ Live dashboard (auto-updated, no API calls):
+## 🪟 Automated Rain-Responsive Shutter System (Raspberry Pi)
 
-https://rotsl.github.io/weather-ml/
+This project now includes a physical automation layer that controls window shutters using a Raspberry Pi and the trained ML model.
+
+### Key Capabilities
+
+- 🤖 ML-based rain prediction (6h horizon)
+- ⏱️ Automatic shutter closing ~10 minutes before rain
+- ☀️ Automatic reopening when safe
+- 🔄 Uses latest model from GitHub
+- 🖐️ Manual override via hardware button
+- 💾 Persistent state recovery after power loss
+
+### Control Logic
+
+| Condition | Action |
+|-----------|---------|
+| Rain probability ≥ threshold | Close shutters |
+| Rain probability < safe margin | Open shutters |
+| Manual button press | Override to open |
+
+No external API calls are made from the hardware device.
 
 ---
 
@@ -30,6 +48,9 @@ weather-ml/
 ├── .env                         # Local secrets (not committed)
 ├── README.md
 ├── requirements.txt
+├── LICENSE
+├── CONTRIBUTING.md
+├── SECURITY.md
 ├── docs/                        # GitHub Pages dashboard
 │   └── index.html
 ├── data/
@@ -43,10 +64,14 @@ weather-ml/
 │   ├── history/
 │   │   └── metrics_history.csv
 │   └── snapshots/
+├── hardware/
+│   ├── shutter_controller.py
+│   ├── gpio_config.py
+│   └── state.txt
 ├── notebooks/
 ├── scripts/
 │   └── *.py
-└── weather/                     # Local virtual environment
+└── weather/                     # Local virtual environment              
 ```
 
 ## Environment Setup
@@ -98,16 +123,65 @@ jupyter notebook notebooks/model_analysis.ipynb
 jupyter notebook notebooks/interactive_dashboard.ipynb
 ```
 
+---
+
+
+## 🛠️ Hardware Setup (Raspberry Pi Shutter Control)
+
+### Requirements
+
+- Raspberry Pi (3/4/5)
+- Servo motor or relay module
+- Manual override button
+- 5V power supply
+- GPIO wiring
+
+### Installation (On Raspberry Pi)
+
+```bash
+sudo apt update
+sudo apt install python3-pigpio pigpio
+pip install gpiozero pandas joblib
+```
+
+- Enable GPIO daemon:
+```
+sudo systemctl enable pigpiod
+sudo systemctl start pigpiod
+```
+
+- Run controller:
+
+```
+python hardware/shutter_controller.py
+```
+
+- Auto-Start on Boot
+
+The controller runs as a systemd service:
+
+```
+sudo systemctl status weather-shutter
+```
+
+Shutters will operate automatically using the latest trained model.
+
+---
 ## Key Outputs
 
 - Clean dataset: `data/processed/weather_hourly_clean.csv`
 - Trained model artifacts and metadata: `models/*.pkl`, `models/*_meta.json`
 - Horizon metrics table: `models/metrics_multihorizon.csv`
+---
 
 ## Notes
 
-- Scripts read location from `VISUAL_CROSSING_LOCATION` in `.env`.
-- `interactive_dashboard.ipynb` includes horizon selection, threshold/date controls, live overlay toggle, refresh button, and schema inspector for live API vs model features.
+- Training and inference use cloud + edge hybrid architecture.
+- All secrets are stored in GitHub Actions only.
+- Hardware devices never expose API keys.
+- Raspberry Pi fetches models from GitHub.
+- Public dashboard performs no external requests.
+- System is quota-safe for free-tier usage.
 
 ---
 
@@ -130,6 +204,22 @@ _Last updated automatically by GitHub Actions._
 
 
 ---
+
+
+
+## 🛡️ Safety & Fail-Safes
+
+The shutter system includes multiple safety mechanisms:
+
+| Feature | Purpose |
+|---------|----------|
+| State file | Restores last position after reboot |
+| Manual override | Immediate user control |
+| Hysteresis | Prevents rapid toggling |
+| Model fallback | Uses previous model if current fails |
+| Watchdog restart | Auto-restart on crash |
+
+Future enhancements include rain sensors and limit switches.
 
 
 ---
@@ -166,7 +256,29 @@ _Last updated automatically by GitHub Actions._
 
 > Disabled (free-tier safe mode)
 
+
 ---
+
+## 🔁 End-to-End System Flow
+
+```text
+Visual Crossing API
+        ↓
+GitHub Actions (48h)
+        ↓
+Data Cleaning
+        ↓
+Model Training
+        ↓
+Model Commit
+        ↓
+Raspberry Pi (git pull)
+        ↓
+Live Prediction
+        ↓
+Shutter Control
+
+```
 
 ### 📁 Dataset
 
@@ -176,3 +288,36 @@ _Last updated automatically by GitHub Actions._
 | Range | 2024-02-22 → 2026-02-23 |
 
 _Last updated: 2026-02-23 04:25 UTC_
+
+---
+## 📜 License 
+This project is licensed under the MIT License. 
+See LICENSE for details. 
+
+--- 
+
+## 🤝 Contributing 
+See CONTRIBUTING.md for guidelines.
+
+--- 
+## 🔐 Security 
+
+See SECURITY.md for reporting vulnerabilities.
+
+---
+
+<div align="center">
+
+### 🌬️ Wisp
+
+*Don't let those  crops get wet*
+
+**Minimal • Automation • ML**
+
+[GitHub](https://github.com/rotsl/weather-ml) • [GitLab](https://gitlab.com/rotsl/weather-ml) • [Dashboard ](https://rotsl.github.io/weather-ml/)
+
+Built by **@rotsl** 💙
+
+</div>
+
+---
