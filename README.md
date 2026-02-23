@@ -14,7 +14,7 @@
 
 ## 🪟 Automated Rain-Responsive Shutter System (Raspberry Pi)
 
-This project now includes a physical automation layer that controls window shutters using a Raspberry Pi and the trained ML model.
+This project n includes a physical automation layer that controls  shutters for massive areacnut drying areas using a Raspberry Pi and the trained ML model.
 
 ### Key Capabilities
 
