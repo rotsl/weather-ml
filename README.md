@@ -131,6 +131,9 @@ _Last updated automatically by GitHub Actions._
 
 ---
 
+
+---
+
 ## 📊 Live ML Dashboard (Auto-Updated)
 
 ### 🧠 Model
@@ -138,9 +141,9 @@ _Last updated automatically by GitHub Actions._
 | Field | Value |
 |-------|-------|
 | Horizon | D_next_6h (6h) |
-| Last trained | 2026-02-22T21:22:55.483029 |
+| Last trained | 2026-02-23T04:25:35.778027 |
 | Features | 17 |
-| Positive rate | 0.3182 |
+| Positive rate | 0.3186 |
 
 ---
 
@@ -148,8 +151,8 @@ _Last updated automatically by GitHub Actions._
 
 | Metric | Latest | Trend |
 |--------|--------|-------|
-| ROC-AUC | 0.9178 | ▁▁▁ |
-| PR-AUC | 0.8178 | ▁▁▁ |
+| ROC-AUC | 0.9124 | ▇▇▇▁ |
+| PR-AUC | 0.8038 | ▇▇▇▁ |
 
 ---
 
@@ -161,7 +164,7 @@ _Last updated automatically by GitHub Actions._
 
 ### 🌧️ Current Weather
 
-> 0.0% rain | 26.0°C | 88.8% RH
+> Disabled (free-tier safe mode)
 
 ---
 
@@ -169,60 +172,7 @@ _Last updated automatically by GitHub Actions._
 
 | Field | Value |
 |-------|-------|
-| Rows | 17,568 |
-| Range | 2024-02-22 → 2026-02-22 |
+| Rows | 17,592 |
+| Range | 2024-02-22 → 2026-02-23 |
 
-_Last updated: 2026-02-22 21:22 UTC_
-
----
-
-## 📡 Monitoring & Reliability
-
-This project includes continuous monitoring:
-
-| Component | Description |
-|-----------|-------------|
-| Automation | GitHub Actions retrains every 48h |
-| Uptime | Workflow badge shows pipeline health |
-| Data Freshness | Dataset badge tracks updates |
-| Performance Drift | ROC/PR tracked over time |
-| Dashboard | Public monitoring via Pages |
-
-If degradation is detected, warnings appear in:
-
-- README
-- Dashboard
-- Metrics history
-
----
-### 📅 Monthly Reports
-
-Performance summaries are generated automatically and stored in:
-`reports/report_YYYY_MM.csv`
-
-- These track long-term stability and drift.
----
-### Notes
-- Automated workflows are quota-safe (~12 records/day).
-- Public dashboard makes no external API requests.
-- Secrets are stored only in GitHub Actions.
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
-
-See `LICENSE` for details.
-
----
-
-## 🤝 Contributing
-
-See `CONTRIBUTING.md` for guidelines.
-
----
-
-## 🔐 Security
-
-See `SECURITY.md` for reporting vulnerabilities.
+_Last updated: 2026-02-23 04:25 UTC_
