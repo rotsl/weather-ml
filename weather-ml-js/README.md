@@ -225,6 +225,12 @@ Project: [https://github.com/rotsl/weather-ml](https://github.com/rotsl/weather-
 
 ---
 
+## 📄 License
+
+MIT © [Rohan R.](https://github.com/rotsl)
+
+--- 
+
 ## 🌱 Philosophy
 
 > "Build systems that predict, adapt, and protect — automatically."
