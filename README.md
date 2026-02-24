@@ -9,6 +9,9 @@
 ![Dataset Updated](https://img.shields.io/github/last-commit/rotsl/weather-ml/main?label=Dataset&logo=databricks)
 ![Model Health](https://img.shields.io/badge/Model-Healthy-green)
 
+[![npm version](https://img.shields.io/npm/v/weather-ml-edge.svg)](https://www.npmjs.com/package/weather-ml-edge)
+[![npm downloads](https://img.shields.io/npm/dm/weather-ml-edge.svg)](https://www.npmjs.com/package/weather-ml-edge)
+
 ---
 [![DOI](https://zenodo.org/badge/1163996139.svg)](https://doi.org/10.5281/zenodo.18738567)
 ---
