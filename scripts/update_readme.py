@@ -188,7 +188,7 @@ status_block = f"{latest:.4f}" if latest is not None else "N/A"
 | Last retrain (UTC) | {meta.get("trained_at")} |
 | Active horizon | {meta.get("horizon")} ({meta.get("hours")}h) |
 | Dataset rows | {rows:,} |
-| Data range | {start} → {end} |
+| Data range | {start} --> {end} |
 | ROC-AUC | {latest["roc_auc"]:.4f if latest is not None else "N/A"} |
 | PR-AUC | {latest["pr_auc"]:.4f if latest is not None else "N/A"} |
 | Positive rate | {meta.get("positive_rate", 0):.4f} |
@@ -244,7 +244,7 @@ dashboard_block = f"""
 | Field | Value |
 |-------|-------|
 | Rows | {rows:,} |
-| Range | {start} → {end} |
+| Range | {start} --> {end} |
 
 _Last updated: {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}_
 
