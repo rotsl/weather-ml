@@ -180,6 +180,8 @@ else:
 # =====================================================
 # Build Live Model Status block
 # =====================================================
+roc_auc_val = f"{latest['roc_auc']:.4f}" if latest is not None else "N/A"
+pr_auc_val = f"{latest['pr_auc']:.4f}" if latest is not None else "N/A"
 status_block = f"{latest:.4f}" if latest is not None else "N/A"
 ## 📊 Live Model Status (Auto-Updated)
 
@@ -189,8 +191,8 @@ status_block = f"{latest:.4f}" if latest is not None else "N/A"
 | Active horizon | {meta.get("horizon")} ({meta.get("hours")}h) |
 | Dataset rows | {rows:,} |
 | Data range | {start} --> {end} |
-| ROC-AUC | {latest["roc_auc"]:.4f if latest is not None else "N/A"} |
-| PR-AUC | {latest["pr_auc"]:.4f if latest is not None else "N/A"} |
+| ROC-AUC | {roc_auc_val} |
+| PR-AUC | {pr_auc_val} |
 | Positive rate | {meta.get("positive_rate", 0):.4f} |
 | Features used | {len(meta.get("features", []))} |
 
@@ -222,8 +224,8 @@ dashboard_block = f"""
 
 | Metric | Latest | Trend |
 |--------|--------|-------|
-| ROC-AUC | {latest["roc_auc"]:.4f if latest is not None else "N/A"} | {roc_trend} |
-| PR-AUC | {latest["pr_auc"]:.4f if latest is not None else "N/A"} | {pr_trend} |
+| ROC-AUC | {roc_auc_val} | {roc_trend} |
+| PR-AUC | {pr_auc_val} | {pr_trend} |
 
 ---
 
