@@ -180,7 +180,8 @@ else:
 # Build Live Model Status block
 # =====================================================
 
-status_block = f"""
+
+status_block = f"{latest:.4f}" if latest is not None else "N/A"
 ## 📊 Live Model Status (Auto-Updated)
 
 | Field | Value |
