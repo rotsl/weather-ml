@@ -40,9 +40,6 @@ def sparkline(series, width=12):
 
 
 def replace_section(text, start_marker, end_marker, new_block):
-    """
-    Replace content between two markers (inclusive start).
-    """
     pattern = re.compile(
         rf"{re.escape(start_marker)}.*?{re.escape(end_marker)}",
         re.DOTALL,
@@ -54,7 +51,7 @@ def replace_section(text, start_marker, end_marker, new_block):
         print(f"⚠️ Section not found: {start_marker}")
         return text
 
-    return text[: match.start()] + new_block + text[match.end():]
+    return text[:match.start()] + new_block + text[match.end():]
 
 
 # =====================================================
@@ -73,15 +70,16 @@ meta = json.loads(meta_files[0].read_text())
 # Dataset info
 # =====================================================
 
+rows = 0
+start = "N/A"
+end = "N/A"
+
 if DATA.exists():
     df = pd.read_csv(DATA, parse_dates=["datetime"])
-    rows = len(df)
-    start = df["datetime"].min().strftime("%Y-%m-%d")
-    end = df["datetime"].max().strftime("%Y-%m-%d")
-else:
-    rows = 0
-    start = "N/A"
-    end = "N/A"
+    if not df.empty:
+        rows = len(df)
+        start = df["datetime"].min().strftime("%Y-%m-%d")
+        end = df["datetime"].max().strftime("%Y-%m-%d")
 
 
 # =====================================================
@@ -96,10 +94,9 @@ pr_trend = "n/a"
 if HISTORY.exists():
     hist = pd.read_csv(HISTORY, parse_dates=["timestamp"])
 
-    if len(hist) > 0:
+    if not hist.empty:
         roc_trend = sparkline(hist["roc_auc"])
         pr_trend = sparkline(hist["pr_auc"])
-
         latest = hist.iloc[-1]
         prev = hist.iloc[-2] if len(hist) > 1 else None
 
@@ -111,7 +108,6 @@ if HISTORY.exists():
 warning = "No history yet"
 
 if latest is not None:
-
     warning = ""
 
     if prev is not None:
@@ -135,15 +131,9 @@ API_KEY = os.getenv("VISUAL_CROSSING_KEY")
 LOCATION = os.getenv("VISUAL_CROSSING_LOCATION")
 ENABLE_LIVE = os.getenv("ENABLE_LIVE_FORECAST", "0") == "1"
 
-if not ENABLE_LIVE:
-    forecast = "Disabled (free-tier safe mode)"
+forecast = "Disabled (free-tier safe mode)"
 
-elif not API_KEY or not LOCATION:
-    forecast = "Unavailable (missing credentials)"
-
-else:
-    forecast = "Unavailable"
-
+if ENABLE_LIVE and API_KEY and LOCATION:
     try:
         url = (
             "https://weather.visualcrossing.com/"
@@ -157,13 +147,11 @@ else:
             js = json.loads(r.read())
 
         cur = js.get("currentConditions", {})
-
         rain = cur.get("precipprob")
         temp = cur.get("temp")
         hum = cur.get("humidity")
 
         parts = []
-
         if rain is not None:
             parts.append(f"{rain}% rain")
         if temp is not None:
@@ -178,13 +166,19 @@ else:
 
 
 # =====================================================
-# Build Live Model Status block
+# Safe metric formatting
 # =====================================================
+
 roc_auc_val = f"{latest['roc_auc']:.4f}" if latest is not None else "N/A"
 pr_auc_val = f"{latest['pr_auc']:.4f}" if latest is not None else "N/A"
-status_block = f"{latest:.4f}" if latest is not None else "N/A"
 positive_rate_val = f"{float(meta.get('positive_rate', 0)):.4f}"
-## 📊 Live Model Status (Auto-Updated)
+
+
+# =====================================================
+# Build Live Model Status block
+# =====================================================
+
+status_block = f"""## 📊 Live Model Status (Auto-Updated)
 
 | Field | Value |
 |-------|-------|
@@ -207,8 +201,7 @@ _Last updated automatically by GitHub Actions._
 # Build Dashboard block
 # =====================================================
 
-dashboard_block = f"""
-## 📊 Live ML Dashboard (Auto-Updated)
+dashboard_block = f"""## 📊 Live ML Dashboard (Auto-Updated)
 
 ### 🧠 Model
 
@@ -259,10 +252,11 @@ _Last updated: {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}_
 # Update README safely
 # =====================================================
 
+if not README.exists():
+    raise FileNotFoundError("README.md not found")
+
 text = README.read_text(encoding="utf-8")
 
-
-# Replace Live Model Status
 text = replace_section(
     text,
     "## 📊 Live Model Status (Auto-Updated)",
@@ -270,15 +264,12 @@ text = replace_section(
     status_block,
 )
 
-
-# Replace Dashboard
 text = replace_section(
     text,
     "## 📊 Live ML Dashboard (Auto-Updated)",
-    "_Last updated:",
+    "---",
     dashboard_block,
 )
-
 
 README.write_text(text, encoding="utf-8")
 
