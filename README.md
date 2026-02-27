@@ -194,18 +194,19 @@ Shutters will operate automatically using the latest trained model.
 
 | Field | Value |
 |-------|-------|
-| Last retrain (UTC) | 2026-02-22T18:26:59.129808 |
+| Last retrain (UTC) | 2026-02-27T22:20:45.846153 |
 | Active horizon | D_next_6h (6h) |
-| Dataset rows | 17,568 |
-| Data range | 2024-02-22 → 2026-02-22 |
-| ROC-AUC | 0.9178 |
-| PR-AUC | 0.8178 |
-| Positive rate | 0.3182 |
+| Dataset rows | 17,688 |
+| Data range | 2024-02-22 --> 2026-02-27 |
+| ROC-AUC | 0.9003 |
+| PR-AUC | 0.7528 |
+| Positive rate | 0.3169 |
 | Features used | 17 |
 
 _Last updated automatically by GitHub Actions._
 
 ---
+
 
 
 ---
@@ -235,6 +236,45 @@ Future enhancements include rain sensors and limit switches.
 
 | Field | Value |
 |-------|-------|
+| Horizon | D_next_6h (6h) |
+| Last trained | 2026-02-27T22:20:45.846153 |
+| Features | 17 |
+| Positive rate | 0.3169 |
+
+---
+
+### 📉 Performance
+
+| Metric | Latest | Trend |
+|--------|--------|-------|
+| ROC-AUC | 0.9003 | ▇▇▇▅▁ |
+| PR-AUC | 0.7528 | ▇▇▇▆▁ |
+
+---
+
+### 🚨 Health
+
+> 🚨 PR-AUC dropped > 0.05
+
+---
+
+### 🌧️ Current Weather
+
+> Disabled (free-tier safe mode)
+
+---
+
+### 📁 Dataset
+
+| Field | Value |
+|-------|-------|
+| Rows | 17,688 |
+| Range | 2024-02-22 --> 2026-02-27 |
+
+_Last updated: 2026-02-27 22:20 UTC_
+
+---
+----|-------|
 | Horizon | D_next_6h (6h) |
 | Last trained | 2026-02-23T04:25:35.778027 |
 | Features | 17 |
