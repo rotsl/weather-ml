@@ -183,6 +183,7 @@ else:
 roc_auc_val = f"{latest['roc_auc']:.4f}" if latest is not None else "N/A"
 pr_auc_val = f"{latest['pr_auc']:.4f}" if latest is not None else "N/A"
 status_block = f"{latest:.4f}" if latest is not None else "N/A"
+positive_rate_val = f"{float(meta.get('positive_rate', 0)):.4f}"
 ## 📊 Live Model Status (Auto-Updated)
 
 | Field | Value |
@@ -193,7 +194,7 @@ status_block = f"{latest:.4f}" if latest is not None else "N/A"
 | Data range | {start} --> {end} |
 | ROC-AUC | {roc_auc_val} |
 | PR-AUC | {pr_auc_val} |
-| Positive rate | {meta.get("positive_rate", 0):.4f} |
+| Positive rate | {positive_rate_val} |
 | Features used | {len(meta.get("features", []))} |
 
 _Last updated automatically by GitHub Actions._
@@ -216,7 +217,7 @@ dashboard_block = f"""
 | Horizon | {meta.get("horizon")} ({meta.get("hours")}h) |
 | Last trained | {meta.get("trained_at")} |
 | Features | {len(meta.get("features", []))} |
-| Positive rate | {meta.get("positive_rate", 0):.4f} |
+| Positive rate | {positive_rate_val} |
 
 ---
 
