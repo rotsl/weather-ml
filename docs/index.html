@@ -46,7 +46,7 @@ body {
 <h1>🌧️ Weather ML Dashboard</h1>
 
 <small>
-Last updated: 2026-03-01 04:23 UTC | Static / No API calls
+Last updated: 2026-03-03 04:15 UTC | Static / No API calls
 </small>
 
 <div class="grid">
@@ -56,8 +56,8 @@ Last updated: 2026-03-01 04:23 UTC | Static / No API calls
 <ul>
 <li>Horizon: D_next_6h (6 h)</li>
 <li>Features: 17</li>
-<li>Positive rate: 0.3160</li>
-<li>Last trained: 2026-03-01T04:23:08.925001</li>
+<li>Positive rate: 0.3155</li>
+<li>Last trained: 2026-03-03T04:15:23.490608</li>
 </ul>
 </div>
 
@@ -69,8 +69,8 @@ Last updated: 2026-03-01 04:23 UTC | Static / No API calls
 <div class="card">
 <h2>📁 Dataset</h2>
 <ul>
-<li>Rows: 17,736</li>
-<li>Range: 2024-02-22 → 2026-03-01</li>
+<li>Rows: 17,784</li>
+<li>Range: 2024-02-22 → 2026-03-03</li>
 </ul>
 </div>
 
@@ -122,14 +122,20 @@ Last updated: 2026-03-01 04:23 UTC | Static / No API calls
 <td>0.7717</td>
 </tr>
 
+<tr>
+<td>2026-03-03</td>
+<td>0.9022</td>
+<td>0.7474</td>
+</tr>
+
 </table>
 </div>
 
 <script>
 
-const dates = ["2026-02-22", "2026-02-22", "2026-02-22", "2026-02-23", "2026-02-27", "2026-03-01"];
-const roc = [0.9178, 0.9178, 0.9178, 0.9124, 0.9003, 0.908];
-const pr = [0.8178, 0.8178, 0.8178, 0.8038, 0.7528, 0.7717];
+const dates = ["2026-02-22", "2026-02-22", "2026-02-22", "2026-02-23", "2026-02-27", "2026-03-01", "2026-03-03"];
+const roc = [0.9178, 0.9178, 0.9178, 0.9124, 0.9003, 0.908, 0.9022];
+const pr = [0.8178, 0.8178, 0.8178, 0.8038, 0.7528, 0.7717, 0.7474];
 
 const ctx = document.getElementById("perfChart");
 
