@@ -178,6 +178,17 @@ This executes:
 2. `scripts/build_chirps_features.py`
 3. `scripts/enrich_training_data_with_chirps.py`
 
+### Edge npm package (`weather-ml-edge`)
+
+- Version `1.0.7` adds CHIRPS-aware model metadata support.
+- CLI output now includes CHIRPS training status and CHIRPS feature count from model metadata.
+- The package still reads runtime secrets from environment (`.env` locally or CI secrets) and does not embed credentials.
+
+```bash
+npm install -g weather-ml-edge
+weather-ml
+```
+
 
 ## 🛠️ Hardware Setup (Raspberry Pi Shutter Control)
 
@@ -259,7 +270,7 @@ Shutters will operate automatically using the latest trained model.
 | Features used | 34 |
 | CHIRPS training | Enabled |
 | CHIRPS feature count | 17 |
-| CHIRPS raw rows | 0 |
+| CHIRPS raw rows | 16,467 |
 | CHIRPS feature rows | 16,467 |
 | CHIRPS enriched rows | 17,904 |
 
@@ -327,7 +338,7 @@ Future enhancements include rain sensors and limit switches.
 | Rows | 17,904 |
 | Range | 2024-02-22 --> 2026-03-08 |
 
-_Last updated: 2026-03-08 11:15 UTC_
+_Last updated: 2026-03-08 11:45 UTC_
 <!-- AUTO_DASHBOARD_END -->
 
 

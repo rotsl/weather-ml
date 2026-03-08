@@ -11,7 +11,11 @@ from string import Template
 
 MODELS = Path("models")
 HISTORY = MODELS / "history" / "metrics_history.csv"
-DATA = Path("data/processed/weather_hourly_clean.csv")
+BASE_DATA = Path("data/processed/weather_hourly_clean.csv")
+ENRICHED_DATA = Path("data/processed/weather_hourly_clean_enriched.csv")
+CHIRPS_RAW = Path("data/raw/chirps_daily.csv")
+CHIRPS_FEATURES = Path("data/processed/chirps_features_daily.csv")
+CHIRPS_ENRICHED = Path("data/processed/weather_hourly_clean_enriched.csv")
 OUT = Path("docs/index.html")
 
 
@@ -28,7 +32,8 @@ meta = json.loads(meta_file.read_text())
 # =====================================================
 
 hist = pd.read_csv(HISTORY, parse_dates=["timestamp"])
-hist["t"] = hist["timestamp"].dt.strftime("%Y-%m-%d")
+hist = hist.sort_values("timestamp").reset_index(drop=True)
+hist["t"] = hist["timestamp"].dt.strftime("%Y-%m-%d %H:%M")
 
 roc_vals = hist["roc_auc"].round(4).tolist()
 pr_vals = hist["pr_auc"].round(4).tolist()
@@ -42,10 +47,24 @@ prev = hist.iloc[-2] if len(hist) > 1 else None
 # Dataset info
 # =====================================================
 
+DATA = ENRICHED_DATA if ENRICHED_DATA.exists() else BASE_DATA
 df = pd.read_csv(DATA, parse_dates=["datetime"])
 rows = len(df)
 start = df["datetime"].min().date()
 end = df["datetime"].max().date()
+
+chirps_feature_count = int(
+    meta.get(
+        "chirps_feature_count",
+        len([f for f in meta.get("features", []) if str(f).startswith("chirps_")]),
+    )
+)
+chirps_enabled = bool(meta.get("chirps_enabled", chirps_feature_count > 0))
+chirps_status = "Enabled" if chirps_enabled else "Disabled"
+
+chirps_raw_rows = len(pd.read_csv(CHIRPS_RAW)) if CHIRPS_RAW.exists() else 0
+chirps_feature_rows = len(pd.read_csv(CHIRPS_FEATURES)) if CHIRPS_FEATURES.exists() else 0
+chirps_enriched_rows = len(pd.read_csv(CHIRPS_ENRICHED)) if CHIRPS_ENRICHED.exists() else 0
 
 
 # =====================================================
@@ -147,6 +166,17 @@ Last updated: $updated | Static / No API calls
 </div>
 
 <div class="card">
+<h2>🌧️ CHIRPS</h2>
+<ul>
+<li>Training: $chirps_status</li>
+<li>Model CHIRPS features: $chirps_feature_count</li>
+<li>Daily cache rows: $chirps_raw_rows</li>
+<li>Daily feature rows: $chirps_feature_rows</li>
+<li>Enriched dataset rows: $chirps_enriched_rows</li>
+</ul>
+</div>
+
+<div class="card">
 <h2>🚨 Health</h2>
 <p class="$status_class">$warning</p>
 </div>
@@ -169,7 +199,7 @@ Last updated: $updated | Static / No API calls
 <div class="card hidden" id="rawdata">
 <h2>📄 Metrics Table</h2>
 <table border="1" cellpadding="6">
-<tr><th>Date</th><th>ROC-AUC</th><th>PR-AUC</th></tr>
+<tr><th>Timestamp (UTC)</th><th>ROC-AUC</th><th>PR-AUC</th></tr>
 $table_rows
 </table>
 </div>
@@ -220,6 +250,11 @@ html = template.substitute(
     rows=f"{rows:,}",
     start=start,
     end=end,
+    chirps_status=chirps_status,
+    chirps_feature_count=f"{chirps_feature_count:,}",
+    chirps_raw_rows=f"{chirps_raw_rows:,}",
+    chirps_feature_rows=f"{chirps_feature_rows:,}",
+    chirps_enriched_rows=f"{chirps_enriched_rows:,}",
     table_rows=rows_html,
     dates=json.dumps(dates),
     roc=json.dumps(roc_vals),

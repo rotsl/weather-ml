@@ -15,6 +15,7 @@ and automation — without exposing private API keys or location data.
 - ⚡ Lightweight CLI tool
 - 🔐 Secure environment-based configuration
 - 🌍 Uses your own Visual Crossing account
+- 🌧️ CHIRPS-aware model metadata status (from upstream trained model)
 - 📦 No bundled datasets or credentials
 - 🖥️ Designed for edge / IoT deployment
 
@@ -58,6 +59,7 @@ Create a `.env` file in your project directory:
 ```env
 VISUAL_CROSSING_KEY=your_api_key_here
 VISUAL_CROSSING_LOCATION=lat,lon
+WEATHER_ML_MODEL_META_URL=https://raw.githubusercontent.com/rotsl/weather-ml/main/models/hgb_D_next_6h_current_meta.json
 ```
 
 Example:
@@ -66,6 +68,8 @@ Example:
 VISUAL_CROSSING_KEY=abc123xyz
 VISUAL_CROSSING_LOCATION=lat,lon
 ```
+
+`WEATHER_ML_MODEL_META_URL` is optional; the default points to the main `weather-ml` model metadata artifact.
 
 Never commit this file.
 
@@ -88,6 +92,10 @@ Output:
 Temp: 26.4°C
 Rain %: 12
 Humidity: 81
+CHIRPS training: Enabled
+CHIRPS features: 17
+Model horizon: D_next_6h
+Model trained at: 2026-03-08T11:15:46.848136
 ```
 
 ---
@@ -95,14 +103,16 @@ Humidity: 81
 ### Programmatic Usage
 
 ```js
-import { loadConfig } from "weather-ml-edge";
-import { getWeather } from "weather-ml-edge";
+import { getChirpsStatus, getWeather, loadConfig, loadModelMeta } from "weather-ml-edge";
 
 const cfg = loadConfig();
 
-const data = await getWeather(cfg.apiKey, cfg.location);
+const weather = await getWeather(cfg.apiKey, cfg.location);
+const meta = await loadModelMeta(cfg.modelMetaUrl);
+const chirps = getChirpsStatus(meta);
 
-console.log(data.precipprob);
+console.log(weather.precipprob);
+console.log(chirps.enabled, chirps.count);
 ```
 
 ---
@@ -143,6 +153,11 @@ Weather data provided by:
 * Visual Crossing Weather API
   [https://www.visualcrossing.com/](https://www.visualcrossing.com/)
 
+Model metadata may include CHIRPS-derived features from:
+
+* CHIRPS Daily (Google Earth Engine)
+  [https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY)
+
 Subject to their terms and pricing.
 
 ---
@@ -174,6 +189,7 @@ weather-ml-edge/
 
 * No offline forecasting
 * Requires external API
+* CHIRPS data is not downloaded directly by this package
 * No bundled ML models
 * No centralized service
 
