@@ -1,11 +1,11 @@
 {
   "horizon": "D_next_6h",
   "hours": 6,
-  "trained_at": "2026-03-08T10:42:40.683370",
+  "trained_at": "2026-03-08T11:03:06.010940",
   "rows": 17903,
   "positive_rate": 0.3150310003909959,
-  "roc_auc": 0.9086152730229571,
-  "pr_auc": 0.7740517546140401,
+  "roc_auc": 0.8759603967714961,
+  "pr_auc": 0.7438264598150399,
   "features": [
     "temp",
     "feelslike",
@@ -23,8 +23,25 @@
     "solarradiation",
     "solarenergy",
     "uvindex",
-    "severerisk"
+    "severerisk",
+    "chirps_lag1d_mm",
+    "chirps_lag2d_mm",
+    "chirps_lag3d_mm",
+    "chirps_roll3d_mm",
+    "chirps_roll7d_mm",
+    "chirps_roll14d_mm",
+    "chirps_roll30d_mm",
+    "chirps_rainy_days_7d",
+    "chirps_rainy_days_30d",
+    "chirps_max3d_mm",
+    "chirps_max7d_mm",
+    "chirps_api",
+    "chirps_month_mean_mm",
+    "chirps_month_std_mm",
+    "chirps_anomaly",
+    "chirps_wet_spell_len",
+    "chirps_dry_spell_len"
   ],
-  "chirps_enabled": false,
-  "chirps_feature_count": 0
+  "chirps_enabled": true,
+  "chirps_feature_count": 17
 }
