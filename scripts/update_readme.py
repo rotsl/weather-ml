@@ -8,6 +8,7 @@ import os
 import re
 from pathlib import Path
 from datetime import datetime, timezone
+from dotenv import load_dotenv
 
 
 # =====================================================
@@ -16,6 +17,9 @@ from datetime import datetime, timezone
 
 README = Path("README.md")
 DATA = Path("data/processed/weather_hourly_clean.csv")
+CHIRPS_RAW = Path("data/raw/chirps_daily.csv")
+CHIRPS_FEATURES = Path("data/processed/chirps_features_daily.csv")
+CHIRPS_ENRICHED = Path("data/processed/weather_hourly_clean_enriched.csv")
 MODELS = Path("models")
 HISTORY = MODELS / "history" / "metrics_history.csv"
 
@@ -64,6 +68,8 @@ if not meta_files:
     raise RuntimeError("No current model metadata found")
 
 meta = json.loads(meta_files[0].read_text())
+chirps_feature_count = len([f for f in meta.get("features", []) if str(f).startswith("chirps_")])
+chirps_status = "Enabled" if chirps_feature_count > 0 else "Disabled"
 
 
 # =====================================================
@@ -80,6 +86,17 @@ if DATA.exists():
         rows = len(df)
         start = df["datetime"].min().strftime("%Y-%m-%d")
         end = df["datetime"].max().strftime("%Y-%m-%d")
+
+chirps_raw_rows = 0
+chirps_feature_rows = 0
+chirps_enriched_rows = 0
+
+if CHIRPS_RAW.exists():
+    chirps_raw_rows = len(pd.read_csv(CHIRPS_RAW))
+if CHIRPS_FEATURES.exists():
+    chirps_feature_rows = len(pd.read_csv(CHIRPS_FEATURES))
+if CHIRPS_ENRICHED.exists():
+    chirps_enriched_rows = len(pd.read_csv(CHIRPS_ENRICHED))
 
 
 # =====================================================
@@ -127,6 +144,7 @@ if latest is not None:
 # Live forecast (Quota-safe)
 # =====================================================
 
+load_dotenv()
 API_KEY = os.getenv("VISUAL_CROSSING_KEY")
 LOCATION = os.getenv("VISUAL_CROSSING_LOCATION")
 ENABLE_LIVE = os.getenv("ENABLE_LIVE_FORECAST", "0") == "1"
@@ -190,6 +208,11 @@ status_block = f"""## 📊 Live Model Status (Auto-Updated)
 | PR-AUC | {pr_auc_val} |
 | Positive rate | {positive_rate_val} |
 | Features used | {len(meta.get("features", []))} |
+| CHIRPS training | {chirps_status} |
+| CHIRPS feature count | {chirps_feature_count} |
+| CHIRPS raw rows | {chirps_raw_rows:,} |
+| CHIRPS feature rows | {chirps_feature_rows:,} |
+| CHIRPS enriched rows | {chirps_enriched_rows:,} |
 
 _Last updated automatically by GitHub Actions._
 
@@ -210,6 +233,7 @@ dashboard_block = f"""## 📊 Live ML Dashboard (Auto-Updated)
 | Horizon | {meta.get("horizon")} ({meta.get("hours")}h) |
 | Last trained | {meta.get("trained_at")} |
 | Features | {len(meta.get("features", []))} |
+| CHIRPS features | {chirps_feature_count} |
 | Positive rate | {positive_rate_val} |
 
 ---

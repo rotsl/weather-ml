@@ -49,17 +49,23 @@ Hourly rain forecasting project using Visual Crossing weather data and scikit-le
 ```text
 weather-ml/
 ├── .env                         # Local secrets (not committed)
+├── .env.example                 # Safe example variables (no secrets)
 ├── README.md
 ├── requirements.txt
 ├── LICENSE
 ├── CONTRIBUTING.md
 ├── SECURITY.md
+├── config/
+│   └── chirps_config.yaml       # Non-secret CHIRPS defaults
 ├── docs/                        # GitHub Pages dashboard
 │   └── index.html
 ├── data/
 │   ├── raw/
+│   │   └── chirps_daily.csv
 │   └── processed/
 │       └── weather_hourly_clean.csv
+│       ├── chirps_features_daily.csv
+│       └── weather_hourly_clean_enriched.csv
 ├── models/
 │   ├── hgb_*_current.pkl
 │   ├── hgb_*_previous.pkl
@@ -73,7 +79,12 @@ weather-ml/
 │   └── state.txt
 ├── notebooks/
 ├── scripts/
-│   └── *.py
+│   ├── update_data_and_retrain.py
+│   ├── run_full_training_pipeline.py
+│   ├── run_chirps_pipeline.py
+│   ├── fetch_chirps_history.py
+│   ├── build_chirps_features.py
+│   └── enrich_training_data_with_chirps.py
 └── weather/                     # Local virtual environment              
 ```
 
@@ -86,14 +97,25 @@ weather-ml/
 pip install -r requirements.txt
 ```
 
-3. Add API key to `.env`:
+3. Add runtime secrets to `.env` (local only, never commit):
 
 ```env
 VISUAL_CROSSING_KEY=your_key_here
-VISUAL_CROSSING_LOCATION=your_location_query
+VISUAL_CROSSING_LOCATION=latitude,longitude
+LOCATION_LAT=your_latitude
+LOCATION_LON=your_longitude
+EE_PROJECT=your_gcp_project_id
+```
+
+4. (Optional but recommended for CHIRPS) authenticate Earth Engine locally once:
+
+```bash
+earthengine authenticate
 ```
 
 ## Pipeline (Run Order)
+
+### Baseline (unchanged)
 
 1. Download raw hourly weather data:
 
@@ -126,7 +148,34 @@ jupyter notebook notebooks/model_analysis.ipynb
 jupyter notebook notebooks/interactive_dashboard.ipynb
 ```
 
----
+### Full retraining pipeline (recommended, CHIRPS + fallback-safe)
+
+```bash
+python3 scripts/run_full_training_pipeline.py
+```
+
+### GitHub Actions Secrets (for CHIRPS in CI)
+
+Configure these repository secrets:
+
+- `VISUAL_CROSSING_KEY`
+- `VISUAL_CROSSING_LOCATION`
+- `LOCATION_LAT`
+- `LOCATION_LON`
+- `EE_PROJECT`
+- `GOOGLE_CREDENTIALS` (full Google service-account JSON)
+
+### CHIRPS-only pipeline (standalone)
+
+```bash
+python3 scripts/run_chirps_pipeline.py
+```
+
+This executes:
+
+1. `scripts/fetch_chirps_history.py`
+2. `scripts/build_chirps_features.py`
+3. `scripts/enrich_training_data_with_chirps.py`
 
 
 ## 🛠️ Hardware Setup (Raspberry Pi Shutter Control)
@@ -175,6 +224,9 @@ Shutters will operate automatically using the latest trained model.
 ## Key Outputs
 
 - Clean dataset: `data/processed/weather_hourly_clean.csv`
+- CHIRPS daily cache: `data/raw/chirps_daily.csv`
+- CHIRPS daily features: `data/processed/chirps_features_daily.csv`
+- Enriched training dataset: `data/processed/weather_hourly_clean_enriched.csv`
 - Trained model artifacts and metadata: `models/*.pkl`, `models/*_meta.json`
 - Horizon metrics table: `models/metrics_multihorizon.csv`
 ---
@@ -182,7 +234,8 @@ Shutters will operate automatically using the latest trained model.
 ## Notes
 
 - Training and inference use cloud + edge hybrid architecture.
-- All secrets are stored in GitHub Actions only.
+- Secrets are read from `.env` locally and GitHub Secrets in CI.
+- API keys and location coordinates are not hardcoded in tracked source.
 - Hardware devices never expose API keys.
 - Raspberry Pi fetches models from GitHub.
 - Public dashboard performs no external requests.
@@ -194,18 +247,27 @@ Shutters will operate automatically using the latest trained model.
 
 | Field | Value |
 |-------|-------|
-| Last retrain (UTC) | 2026-03-07T04:01:57.911562 |
+| Last retrain (UTC) | 2026-03-08T11:03:06.010940 |
 | Active horizon | D_next_6h (6h) |
-| Dataset rows | 17,880 |
-| Data range | 2024-02-22 --> 2026-03-07 |
-| ROC-AUC | 0.9103 |
-| PR-AUC | 0.7726 |
-| Positive rate | 0.3151 |
-| Features used | 17 |
+| Dataset rows | 17,904 |
+| Data range | 2024-02-22 --> 2026-03-08 |
+| ROC-AUC | 0.8760 |
+| PR-AUC | 0.7438 |
+| Positive rate | 0.3150 |
+| Features used | 34 |
+| CHIRPS training | Enabled |
+| CHIRPS feature count | 17 |
+| CHIRPS raw rows | 16,467 |
+| CHIRPS feature rows | 16,467 |
+| CHIRPS enriched rows | 17,904 |
 
 _Last updated automatically by GitHub Actions._
 
 ---
+
+
+
+
 
 
 
@@ -240,6 +302,166 @@ Future enhancements include rain sensors and limit switches.
 
 | Field | Value |
 |-------|-------|
+| Horizon | D_next_6h (6h) |
+| Last trained | 2026-03-08T11:03:06.010940 |
+| Features | 34 |
+| CHIRPS features | 17 |
+| Positive rate | 0.3150 |
+
+---
+
+### 📉 Performance
+
+| Metric | Latest | Trend |
+|--------|--------|-------|
+| ROC-AUC | 0.8760 | ▇▇▇▅▆▅▇▆▆▆▆▁ |
+| PR-AUC | 0.7438 | ▇▇▆▁▃▁▄▃▃▃▃▁ |
+
+---
+
+### 🚨 Health
+
+> ✅ No degradation detected
+
+---
+
+### 🌧️ Current Weather
+
+> Disabled (free-tier safe mode)
+
+---
+
+### 📁 Dataset
+
+| Field | Value |
+|-------|-------|
+| Rows | 17,904 |
+| Range | 2024-02-22 --> 2026-03-08 |
+
+_Last updated: 2026-03-08 11:13 UTC_
+
+---
+----|-------|
+| Horizon | D_next_6h (6h) |
+| Last trained | 2026-03-08T11:03:06.010940 |
+| Features | 34 |
+| CHIRPS features | 17 |
+| Positive rate | 0.3150 |
+
+---
+
+### 📉 Performance
+
+| Metric | Latest | Trend |
+|--------|--------|-------|
+| ROC-AUC | 0.8760 | ▇▇▇▅▆▅▇▆▆▆▆▁ |
+| PR-AUC | 0.7438 | ▇▇▆▁▃▁▄▃▃▃▃▁ |
+
+---
+
+### 🚨 Health
+
+> ✅ No degradation detected
+
+---
+
+### 🌧️ Current Weather
+
+> Disabled (free-tier safe mode)
+
+---
+
+### 📁 Dataset
+
+| Field | Value |
+|-------|-------|
+| Rows | 17,904 |
+| Range | 2024-02-22 --> 2026-03-08 |
+
+_Last updated: 2026-03-08 11:03 UTC_
+
+---
+----|-------|
+| Horizon | D_next_6h (6h) |
+| Last trained | 2026-03-08T10:42:40.683370 |
+| Features | 17 |
+| CHIRPS features | 0 |
+| Positive rate | 0.3150 |
+
+---
+
+### 📉 Performance
+
+| Metric | Latest | Trend |
+|--------|--------|-------|
+| ROC-AUC | 0.9086 | ▇▇▇▅▁▄▁▆▅▄▄▄ |
+| PR-AUC | 0.7741 | ▇▇▇▆▁▃▁▄▃▃▃▃ |
+
+---
+
+### 🚨 Health
+
+> ✅ No degradation detected
+
+---
+
+### 🌧️ Current Weather
+
+> Disabled (free-tier safe mode)
+
+---
+
+### 📁 Dataset
+
+| Field | Value |
+|-------|-------|
+| Rows | 17,904 |
+| Range | 2024-02-22 --> 2026-03-08 |
+
+_Last updated: 2026-03-08 10:42 UTC_
+
+---
+----|-------|
+| Horizon | D_next_6h (6h) |
+| Last trained | 2026-03-07T04:01:57.911562 |
+| Features | 17 |
+| CHIRPS features | 0 |
+| Positive rate | 0.3151 |
+
+---
+
+### 📉 Performance
+
+| Metric | Latest | Trend |
+|--------|--------|-------|
+| ROC-AUC | 0.9103 | ▇▇▇▅▁▄▁▆▅ |
+| PR-AUC | 0.7726 | ▇▇▇▆▁▃▁▄▃ |
+
+---
+
+### 🚨 Health
+
+> ✅ No degradation detected
+
+---
+
+### 🌧️ Current Weather
+
+> Disabled (free-tier safe mode)
+
+---
+
+### 📁 Dataset
+
+| Field | Value |
+|-------|-------|
+| Rows | 17,880 |
+| Range | 2024-02-22 --> 2026-03-07 |
+
+_Last updated: 2026-03-08 10:40 UTC_
+
+---
+----|-------|
 | Horizon | D_next_6h (6h) |
 | Last trained | 2026-03-07T04:01:57.911562 |
 | Features | 17 |
@@ -469,9 +691,13 @@ _Last updated: 2026-02-27 22:20 UTC_
 ```text
 Visual Crossing API
         ↓
+CHIRPS (Google Earth Engine)
+        ↓
 GitHub Actions (48h)
         ↓
 Data Cleaning
+        ↓
+CHIRPS Feature Enrichment
         ↓
 Model Training
         ↓

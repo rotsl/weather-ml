@@ -1,0 +1,8 @@
+start_date: "1981-01-01"
+end_date: null
+cache_enabled: true
+scale_meters: 5566
+max_retries: 3
+retry_delay_seconds: 2.0
+rain_threshold_mm: 0.1
+api_decay_k: 0.85

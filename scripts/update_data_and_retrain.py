@@ -34,6 +34,8 @@ RECLEAN_DAYS = 14
 HORIZON_NAME = "D_next_6h"
 
 DATA_PROCESSED = Path("data/processed/weather_hourly_clean.csv")
+CHIRPS_FEATURES_DAILY = Path("data/processed/chirps_features_daily.csv")
+CHIRPS_ENRICHED_OUTPUT = Path("data/processed/weather_hourly_clean_enriched.csv")
 
 MODELS_DIR = Path("models")
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
@@ -66,6 +68,7 @@ except Exception:
 
 API_KEY = os.getenv("VISUAL_CROSSING_KEY")
 LOCATION = os.getenv("VISUAL_CROSSING_LOCATION")
+ENABLE_CHIRPS_TRAINING = os.getenv("ENABLE_CHIRPS_TRAINING", "1") == "1"
 
 if not API_KEY:
     raise RuntimeError("VISUAL_CROSSING_KEY not found in environment")
@@ -73,7 +76,7 @@ if not API_KEY:
 if not LOCATION:
     raise RuntimeError("VISUAL_CROSSING_LOCATION not found in environment")
 
-print("Using location:", LOCATION)
+print("Using location from secure environment configuration.")
 
 
 # =========================================================
@@ -118,7 +121,7 @@ def fetch_vc_json(start_date: str, end_date: str, include: str = "hours") -> dic
             return json.loads(resp.read())
 
     except urllib.error.HTTPError as e:
-        raise RuntimeError(f"HTTP {e.code}: {e.read().decode()}")
+        raise RuntimeError(f"HTTP {e.code}: Visual Crossing request failed")
 
     except urllib.error.URLError as e:
         raise RuntimeError(f"URL error: {e.reason}")
@@ -221,6 +224,68 @@ def reclean_recent_window(df_all: pd.DataFrame, days: int = 14) -> pd.DataFrame:
     out = pd.concat([old, recent], ignore_index=True)
     out = out.sort_values("datetime").ffill().bfill()
     return out
+
+
+def strip_chirps_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Remove pre-existing CHIRPS columns before recleaning baseline weather."""
+    chirps_cols = [c for c in df.columns if c.startswith("chirps_")]
+    if chirps_cols:
+        print(f"Dropping {len(chirps_cols)} existing CHIRPS columns before reclean.")
+        return df.drop(columns=chirps_cols)
+    return df
+
+
+def load_chirps_daily_features(path: Path) -> tuple[pd.DataFrame, List[str]]:
+    """Load daily CHIRPS feature table."""
+    if not path.exists():
+        raise FileNotFoundError(f"CHIRPS feature file not found: {path}")
+
+    df = pd.read_csv(path)
+    if "date" not in df.columns:
+        raise RuntimeError(f"CHIRPS feature file {path} missing 'date' column")
+
+    chirps_cols = [c for c in df.columns if c.startswith("chirps_")]
+    if not chirps_cols:
+        raise RuntimeError(f"CHIRPS feature file {path} has no 'chirps_' columns")
+
+    df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.normalize()
+    df = df.dropna(subset=["date"]).sort_values("date")
+    df = df.drop_duplicates(subset=["date"], keep="last")
+    return df[["date", *chirps_cols]], chirps_cols
+
+
+def merge_chirps_features(df_hourly: pd.DataFrame) -> tuple[pd.DataFrame, List[str]]:
+    """Merge daily CHIRPS features onto hourly records."""
+    daily_chirps, chirps_cols = load_chirps_daily_features(CHIRPS_FEATURES_DAILY)
+
+    work = df_hourly.copy()
+    work["date"] = pd.to_datetime(work["datetime"]).dt.normalize()
+
+    merged = work.merge(daily_chirps, on="date", how="left", validate="many_to_one")
+    merged = merged.drop(columns=["date"])
+
+    for col in chirps_cols:
+        missing = int(merged[col].isna().sum())
+        if missing:
+            print(f"CHIRPS column {col} missing on {missing} rows; filling with 0.0")
+            merged[col] = merged[col].fillna(0.0)
+
+    CHIRPS_ENRICHED_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    merged.to_csv(CHIRPS_ENRICHED_OUTPUT, index=False)
+    print(f"Saved CHIRPS-enriched dataset: {CHIRPS_ENRICHED_OUTPUT}")
+    return merged, chirps_cols
+
+
+def extend_features_with_chirps(base_features: List[str], df: pd.DataFrame) -> List[str]:
+    """Append available CHIRPS columns to training feature list."""
+    features = list(base_features)
+    chirps_cols = [c for c in df.columns if c.startswith("chirps_")]
+
+    for col in chirps_cols:
+        if col not in features:
+            features.append(col)
+
+    return features
 
 
 # =========================================================
@@ -343,6 +408,7 @@ def main():
         raise RuntimeError("Clean dataset missing")
 
     df_old = pd.read_csv(DATA_PROCESSED, parse_dates=["datetime"])
+    df_old = strip_chirps_columns(df_old)
 
     end = datetime.utcnow().date()
     start = end - timedelta(days=PULL_DAYS)
@@ -375,15 +441,39 @@ def main():
     df_all = df_all.sort_values("datetime").drop_duplicates("datetime")
 
     df_clean = reclean_recent_window(df_all, days=RECLEAN_DAYS)
+    df_train = df_clean.copy()
+    chirps_cols_in_use: List[str] = []
 
-    # Save updated processed dataset
-    DATA_PROCESSED.parent.mkdir(parents=True, exist_ok=True)
-    df_clean.to_csv(DATA_PROCESSED, index=False)
+    if ENABLE_CHIRPS_TRAINING:
+        try:
+            df_train, chirps_cols_in_use = merge_chirps_features(df_clean)
+            print(f"CHIRPS enrichment enabled with {len(chirps_cols_in_use)} features.")
+        except Exception as e:
+            print(f"WARNING: CHIRPS enrichment unavailable, using baseline features. ({e})")
+            df_train = df_clean.copy()
+    else:
+        print("CHIRPS enrichment disabled by ENABLE_CHIRPS_TRAINING=0")
 
     features = load_feature_list(HORIZON_NAME)
+    features = extend_features_with_chirps(features, df_train)
     h = 6 if "6h" in HORIZON_NAME else 3 if "3h" in HORIZON_NAME else 1
+    chirps_feature_count = len([f for f in features if f.startswith("chirps_")])
+    if chirps_feature_count > 0:
+        print(f"Training with {chirps_feature_count} CHIRPS feature columns.")
 
-    model, res = train_model(df_clean, h, features)
+    # Keep runtime dataset aligned with the model's expected features.
+    for f in features:
+        if f not in df_train.columns:
+            if f.startswith("chirps_"):
+                df_train[f] = 0.0
+            else:
+                df_train[f] = np.nan
+
+    # Save updated processed dataset (baseline + optional CHIRPS columns)
+    DATA_PROCESSED.parent.mkdir(parents=True, exist_ok=True)
+    df_train.to_csv(DATA_PROCESSED, index=False)
+
+    model, res = train_model(df_train, h, features)
 
     meta = {
         "horizon": HORIZON_NAME,
@@ -394,6 +484,8 @@ def main():
         "roc_auc": res.roc_auc,
         "pr_auc": res.pr_auc,
         "features": features,
+        "chirps_enabled": bool(chirps_feature_count > 0),
+        "chirps_feature_count": int(chirps_feature_count),
     }
 
     rotate_models(model, meta)

@@ -46,7 +46,7 @@ body {
 <h1>🌧️ Weather ML Dashboard</h1>
 
 <small>
-Last updated: 2026-03-07 04:01 UTC | Static / No API calls
+Last updated: 2026-03-08 11:13 UTC | Static / No API calls
 </small>
 
 <div class="grid">
@@ -55,9 +55,9 @@ Last updated: 2026-03-07 04:01 UTC | Static / No API calls
 <h2>🧠 Model</h2>
 <ul>
 <li>Horizon: D_next_6h (6 h)</li>
-<li>Features: 17</li>
-<li>Positive rate: 0.3151</li>
-<li>Last trained: 2026-03-07T04:01:57.911562</li>
+<li>Features: 34</li>
+<li>Positive rate: 0.3150</li>
+<li>Last trained: 2026-03-08T11:03:06.010940</li>
 </ul>
 </div>
 
@@ -69,8 +69,8 @@ Last updated: 2026-03-07 04:01 UTC | Static / No API calls
 <div class="card">
 <h2>📁 Dataset</h2>
 <ul>
-<li>Rows: 17,880</li>
-<li>Range: 2024-02-22 → 2026-03-07</li>
+<li>Rows: 17,904</li>
+<li>Range: 2024-02-22 → 2026-03-08</li>
 </ul>
 </div>
 
@@ -140,14 +140,38 @@ Last updated: 2026-03-07 04:01 UTC | Static / No API calls
 <td>0.7726</td>
 </tr>
 
+<tr>
+<td>2026-03-08</td>
+<td>0.9090</td>
+<td>0.7743</td>
+</tr>
+
+<tr>
+<td>2026-03-08</td>
+<td>0.9086</td>
+<td>0.7741</td>
+</tr>
+
+<tr>
+<td>2026-03-08</td>
+<td>0.9086</td>
+<td>0.7741</td>
+</tr>
+
+<tr>
+<td>2026-03-08</td>
+<td>0.8760</td>
+<td>0.7438</td>
+</tr>
+
 </table>
 </div>
 
 <script>
 
-const dates = ["2026-02-22", "2026-02-22", "2026-02-22", "2026-02-23", "2026-02-27", "2026-03-01", "2026-03-03", "2026-03-05", "2026-03-07"];
-const roc = [0.9178, 0.9178, 0.9178, 0.9124, 0.9003, 0.908, 0.9022, 0.9133, 0.9103];
-const pr = [0.8178, 0.8178, 0.8178, 0.8038, 0.7528, 0.7717, 0.7474, 0.7854, 0.7726];
+const dates = ["2026-02-22", "2026-02-22", "2026-02-22", "2026-02-23", "2026-02-27", "2026-03-01", "2026-03-03", "2026-03-05", "2026-03-07", "2026-03-08", "2026-03-08", "2026-03-08", "2026-03-08"];
+const roc = [0.9178, 0.9178, 0.9178, 0.9124, 0.9003, 0.908, 0.9022, 0.9133, 0.9103, 0.909, 0.9086, 0.9086, 0.876];
+const pr = [0.8178, 0.8178, 0.8178, 0.8038, 0.7528, 0.7717, 0.7474, 0.7854, 0.7726, 0.7743, 0.7741, 0.7741, 0.7438];
 
 const ctx = document.getElementById("perfChart");
 

@@ -41,6 +41,17 @@ jobs:
       with:
         python-version: "3.11"
 
+    # ============================
+    # Google Auth (for CHIRPS / EE)
+    # ============================
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+        project_id: ${{ secrets.EE_PROJECT }}
+        create_credentials_file: true
+        export_environment_variables: true
+
 
     # ============================
     # Dependencies
@@ -65,12 +76,27 @@ jobs:
 
 
     # ============================
+    # CHIRPS (optional; non-blocking)
+    # ============================
+    - name: Build CHIRPS features (optional)
+      env:
+        LOCATION_LAT: ${{ secrets.LOCATION_LAT }}
+        LOCATION_LON: ${{ secrets.LOCATION_LON }}
+        VISUAL_CROSSING_LOCATION: ${{ secrets.VISUAL_CROSSING_LOCATION }}
+        EE_PROJECT: ${{ secrets.EE_PROJECT }}
+      run: |
+        echo "Starting CHIRPS pipeline..."
+        python -u scripts/run_chirps_pipeline.py || echo "CHIRPS failed; continuing baseline retrain."
+
+
+    # ============================
     # Retrain
     # ============================
     - name: Update data + retrain
       env:
         VISUAL_CROSSING_KEY: ${{ secrets.VISUAL_CROSSING_KEY }}
         VISUAL_CROSSING_LOCATION: ${{ secrets.VISUAL_CROSSING_LOCATION }}
+        ENABLE_CHIRPS_TRAINING: "1"
       run: |
         echo "Starting retrain..."
         python -u scripts/update_data_and_retrain.py

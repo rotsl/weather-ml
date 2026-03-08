@@ -49,8 +49,7 @@ print(f"Range: {START_DATE} → {END_DATE}")
 response = requests.get(url, timeout=300)
 
 if response.status_code != 200:
-    print(f"HTTP Error {response.status_code}")
-    print(response.text[:500])
+    print(f"HTTP Error {response.status_code}: Visual Crossing request failed")
     raise SystemExit(1)
 
 # ---------------------------------

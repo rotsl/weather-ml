@@ -64,7 +64,7 @@ Example:
 
 ```env
 VISUAL_CROSSING_KEY=abc123xyz
-VISUAL_CROSSING_LOCATION=12.9145,74.8560
+VISUAL_CROSSING_LOCATION=lat,lon
 ```
 
 Never commit this file.
@@ -239,4 +239,3 @@ Minimal • Secure • Edge-first • ML-powered
 
 
 ---
-
