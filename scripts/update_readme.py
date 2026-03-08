@@ -22,6 +22,10 @@ CHIRPS_FEATURES = Path("data/processed/chirps_features_daily.csv")
 CHIRPS_ENRICHED = Path("data/processed/weather_hourly_clean_enriched.csv")
 MODELS = Path("models")
 HISTORY = MODELS / "history" / "metrics_history.csv"
+STATUS_START = "<!-- AUTO_STATUS_START -->"
+STATUS_END = "<!-- AUTO_STATUS_END -->"
+DASHBOARD_START = "<!-- AUTO_DASHBOARD_START -->"
+DASHBOARD_END = "<!-- AUTO_DASHBOARD_END -->"
 
 
 # =====================================================
@@ -43,19 +47,26 @@ def sparkline(series, width=12):
     return "".join(ticks[int(x * 7)] for x in s)
 
 
-def replace_section(text, start_marker, end_marker, new_block):
-    pattern = re.compile(
-        rf"{re.escape(start_marker)}.*?{re.escape(end_marker)}",
+def replace_marked_or_legacy_section(text, marker_start, marker_end, heading, body):
+    marked_block = f"{marker_start}\n{body.strip()}\n{marker_end}"
+
+    marker_pattern = re.compile(
+        rf"{re.escape(marker_start)}.*?{re.escape(marker_end)}",
         re.DOTALL,
     )
+    if marker_pattern.search(text):
+        return marker_pattern.sub(marked_block, text, count=1)
 
-    match = pattern.search(text)
+    # Legacy fallback: replace the whole section from heading to next level-2 heading.
+    legacy_pattern = re.compile(
+        rf"{re.escape(heading)}.*?(?=\n## [^\n]+|\Z)",
+        re.DOTALL,
+    )
+    if legacy_pattern.search(text):
+        return legacy_pattern.sub(marked_block + "\n\n", text, count=1)
 
-    if not match:
-        print(f"⚠️ Section not found: {start_marker}")
-        return text
-
-    return text[:match.start()] + new_block + text[match.end():]
+    # If neither exists, append at end to keep script non-destructive.
+    return text.rstrip() + "\n\n" + marked_block + "\n"
 
 
 # =====================================================
@@ -215,8 +226,6 @@ status_block = f"""## 📊 Live Model Status (Auto-Updated)
 | CHIRPS enriched rows | {chirps_enriched_rows:,} |
 
 _Last updated automatically by GitHub Actions._
-
----
 """
 
 
@@ -267,8 +276,6 @@ dashboard_block = f"""## 📊 Live ML Dashboard (Auto-Updated)
 | Range | {start} --> {end} |
 
 _Last updated: {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}_
-
----
 """
 
 
@@ -281,17 +288,19 @@ if not README.exists():
 
 text = README.read_text(encoding="utf-8")
 
-text = replace_section(
+text = replace_marked_or_legacy_section(
     text,
+    STATUS_START,
+    STATUS_END,
     "## 📊 Live Model Status (Auto-Updated)",
-    "_Last updated automatically by GitHub Actions._\n\n---",
     status_block,
 )
 
-text = replace_section(
+text = replace_marked_or_legacy_section(
     text,
+    DASHBOARD_START,
+    DASHBOARD_END,
     "## 📊 Live ML Dashboard (Auto-Updated)",
-    "---",
     dashboard_block,
 )
 

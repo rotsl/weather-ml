@@ -8,6 +8,9 @@
 ![Workflow Uptime](https://img.shields.io/github/actions/workflow/status/rotsl/weather-ml/retrain.yml?label=Automation&logo=github)
 ![Dataset Updated](https://img.shields.io/github/last-commit/rotsl/weather-ml/main?label=Dataset&logo=databricks)
 ![Model Health](https://img.shields.io/badge/Model-Healthy-green)
+[![CHIRPS Dataset](https://img.shields.io/badge/CHIRPS-UCSB--CHG%2FCHIRPS%2FDAILY-1f7a8c)](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY)
+![Earth Engine](https://img.shields.io/badge/Google%20Earth%20Engine-Enabled-34a853)
+![CHIRPS Pipeline](https://img.shields.io/badge/CHIRPS%20Pipeline-Additive%20%26%20Fallback%20Safe-2a9d8f)
 
 [![npm version](https://img.shields.io/npm/v/weather-ml-edge.svg)](https://www.npmjs.com/package/weather-ml-edge)
 [![npm downloads](https://img.shields.io/npm/dm/weather-ml-edge.svg)](https://www.npmjs.com/package/weather-ml-edge)
@@ -41,8 +44,6 @@ No external API calls are made from the hardware device.
 ---
 
 Hourly rain forecasting project using Visual Crossing weather data and scikit-learn gradient boosting models for multiple prediction horizons.
-
-## Project Structure
 
 ## 📁 Project Structure
 
@@ -243,6 +244,7 @@ Shutters will operate automatically using the latest trained model.
 
 ---
 
+<!-- AUTO_STATUS_START -->
 ## 📊 Live Model Status (Auto-Updated)
 
 | Field | Value |
@@ -262,22 +264,7 @@ Shutters will operate automatically using the latest trained model.
 | CHIRPS enriched rows | 17,904 |
 
 _Last updated automatically by GitHub Actions._
-
----
-
-
-
-
-
-
-
-
-
-
-
-
----
-
+<!-- AUTO_STATUS_END -->
 
 
 ## 🛡️ Safety & Fail-Safes
@@ -297,6 +284,7 @@ Future enhancements include rain sensors and limit switches.
 
 ---
 
+<!-- AUTO_DASHBOARD_START -->
 ## 📊 Live ML Dashboard (Auto-Updated)
 
 ### 🧠 Model
@@ -340,392 +328,8 @@ Future enhancements include rain sensors and limit switches.
 | Range | 2024-02-22 --> 2026-03-08 |
 
 _Last updated: 2026-03-08 11:15 UTC_
+<!-- AUTO_DASHBOARD_END -->
 
----
-----|-------|
-| Horizon | D_next_6h (6h) |
-| Last trained | 2026-03-08T11:03:06.010940 |
-| Features | 34 |
-| CHIRPS features | 17 |
-| Positive rate | 0.3150 |
-
----
-
-### 📉 Performance
-
-| Metric | Latest | Trend |
-|--------|--------|-------|
-| ROC-AUC | 0.8760 | ▇▇▇▅▆▅▇▆▆▆▆▁ |
-| PR-AUC | 0.7438 | ▇▇▆▁▃▁▄▃▃▃▃▁ |
-
----
-
-### 🚨 Health
-
-> ✅ No degradation detected
-
----
-
-### 🌧️ Current Weather
-
-> Disabled (free-tier safe mode)
-
----
-
-### 📁 Dataset
-
-| Field | Value |
-|-------|-------|
-| Rows | 17,904 |
-| Range | 2024-02-22 --> 2026-03-08 |
-
-_Last updated: 2026-03-08 11:13 UTC_
-
----
-----|-------|
-| Horizon | D_next_6h (6h) |
-| Last trained | 2026-03-08T11:03:06.010940 |
-| Features | 34 |
-| CHIRPS features | 17 |
-| Positive rate | 0.3150 |
-
----
-
-### 📉 Performance
-
-| Metric | Latest | Trend |
-|--------|--------|-------|
-| ROC-AUC | 0.8760 | ▇▇▇▅▆▅▇▆▆▆▆▁ |
-| PR-AUC | 0.7438 | ▇▇▆▁▃▁▄▃▃▃▃▁ |
-
----
-
-### 🚨 Health
-
-> ✅ No degradation detected
-
----
-
-### 🌧️ Current Weather
-
-> Disabled (free-tier safe mode)
-
----
-
-### 📁 Dataset
-
-| Field | Value |
-|-------|-------|
-| Rows | 17,904 |
-| Range | 2024-02-22 --> 2026-03-08 |
-
-_Last updated: 2026-03-08 11:03 UTC_
-
----
-----|-------|
-| Horizon | D_next_6h (6h) |
-| Last trained | 2026-03-08T10:42:40.683370 |
-| Features | 17 |
-| CHIRPS features | 0 |
-| Positive rate | 0.3150 |
-
----
-
-### 📉 Performance
-
-| Metric | Latest | Trend |
-|--------|--------|-------|
-| ROC-AUC | 0.9086 | ▇▇▇▅▁▄▁▆▅▄▄▄ |
-| PR-AUC | 0.7741 | ▇▇▇▆▁▃▁▄▃▃▃▃ |
-
----
-
-### 🚨 Health
-
-> ✅ No degradation detected
-
----
-
-### 🌧️ Current Weather
-
-> Disabled (free-tier safe mode)
-
----
-
-### 📁 Dataset
-
-| Field | Value |
-|-------|-------|
-| Rows | 17,904 |
-| Range | 2024-02-22 --> 2026-03-08 |
-
-_Last updated: 2026-03-08 10:42 UTC_
-
----
-----|-------|
-| Horizon | D_next_6h (6h) |
-| Last trained | 2026-03-07T04:01:57.911562 |
-| Features | 17 |
-| CHIRPS features | 0 |
-| Positive rate | 0.3151 |
-
----
-
-### 📉 Performance
-
-| Metric | Latest | Trend |
-|--------|--------|-------|
-| ROC-AUC | 0.9103 | ▇▇▇▅▁▄▁▆▅ |
-| PR-AUC | 0.7726 | ▇▇▇▆▁▃▁▄▃ |
-
----
-
-### 🚨 Health
-
-> ✅ No degradation detected
-
----
-
-### 🌧️ Current Weather
-
-> Disabled (free-tier safe mode)
-
----
-
-### 📁 Dataset
-
-| Field | Value |
-|-------|-------|
-| Rows | 17,880 |
-| Range | 2024-02-22 --> 2026-03-07 |
-
-_Last updated: 2026-03-08 10:40 UTC_
-
----
-----|-------|
-| Horizon | D_next_6h (6h) |
-| Last trained | 2026-03-07T04:01:57.911562 |
-| Features | 17 |
-| Positive rate | 0.3151 |
-
----
-
-### 📉 Performance
-
-| Metric | Latest | Trend |
-|--------|--------|-------|
-| ROC-AUC | 0.9103 | ▇▇▇▅▁▄▁▆▅ |
-| PR-AUC | 0.7726 | ▇▇▇▆▁▃▁▄▃ |
-
----
-
-### 🚨 Health
-
-> ✅ No degradation detected
-
----
-
-### 🌧️ Current Weather
-
-> Disabled (free-tier safe mode)
-
----
-
-### 📁 Dataset
-
-| Field | Value |
-|-------|-------|
-| Rows | 17,880 |
-| Range | 2024-02-22 --> 2026-03-07 |
-
-_Last updated: 2026-03-07 04:01 UTC_
-
----
-----|-------|
-| Horizon | D_next_6h (6h) |
-| Last trained | 2026-03-05T04:12:58.047354 |
-| Features | 17 |
-| Positive rate | 0.3155 |
-
----
-
-### 📉 Performance
-
-| Metric | Latest | Trend |
-|--------|--------|-------|
-| ROC-AUC | 0.9133 | ▇▇▇▅▁▄▁▆ |
-| PR-AUC | 0.7854 | ▇▇▇▆▁▃▁▄ |
-
----
-
-### 🚨 Health
-
-> ✅ No degradation detected
-
----
-
-### 🌧️ Current Weather
-
-> Disabled (free-tier safe mode)
-
----
-
-### 📁 Dataset
-
-| Field | Value |
-|-------|-------|
-| Rows | 17,832 |
-| Range | 2024-02-22 --> 2026-03-05 |
-
-_Last updated: 2026-03-05 04:12 UTC_
-
----
-----|-------|
-| Horizon | D_next_6h (6h) |
-| Last trained | 2026-03-03T04:15:23.490608 |
-| Features | 17 |
-| Positive rate | 0.3155 |
-
----
-
-### 📉 Performance
-
-| Metric | Latest | Trend |
-|--------|--------|-------|
-| ROC-AUC | 0.9022 | ▇▇▇▅▁▄▁ |
-| PR-AUC | 0.7474 | ▇▇▇▆▁▃▁ |
-
----
-
-### 🚨 Health
-
-> ✅ No degradation detected
-
----
-
-### 🌧️ Current Weather
-
-> Disabled (free-tier safe mode)
-
----
-
-### 📁 Dataset
-
-| Field | Value |
-|-------|-------|
-| Rows | 17,784 |
-| Range | 2024-02-22 --> 2026-03-03 |
-
-_Last updated: 2026-03-03 04:15 UTC_
-
----
-----|-------|
-| Horizon | D_next_6h (6h) |
-| Last trained | 2026-03-01T04:23:08.925001 |
-| Features | 17 |
-| Positive rate | 0.3160 |
-
----
-
-### 📉 Performance
-
-| Metric | Latest | Trend |
-|--------|--------|-------|
-| ROC-AUC | 0.9080 | ▇▇▇▅▁▄ |
-| PR-AUC | 0.7717 | ▇▇▇▆▁▃ |
-
----
-
-### 🚨 Health
-
-> ✅ No degradation detected
-
----
-
-### 🌧️ Current Weather
-
-> Disabled (free-tier safe mode)
-
----
-
-### 📁 Dataset
-
-| Field | Value |
-|-------|-------|
-| Rows | 17,736 |
-| Range | 2024-02-22 --> 2026-03-01 |
-
-_Last updated: 2026-03-01 04:23 UTC_
-
----
-----|-------|
-| Horizon | D_next_6h (6h) |
-| Last trained | 2026-02-27T22:20:45.846153 |
-| Features | 17 |
-| Positive rate | 0.3169 |
-
----
-
-### 📉 Performance
-
-| Metric | Latest | Trend |
-|--------|--------|-------|
-| ROC-AUC | 0.9003 | ▇▇▇▅▁ |
-| PR-AUC | 0.7528 | ▇▇▇▆▁ |
-
----
-
-### 🚨 Health
-
-> 🚨 PR-AUC dropped > 0.05
-
----
-
-### 🌧️ Current Weather
-
-> Disabled (free-tier safe mode)
-
----
-
-### 📁 Dataset
-
-| Field | Value |
-|-------|-------|
-| Rows | 17,688 |
-| Range | 2024-02-22 --> 2026-02-27 |
-
-_Last updated: 2026-02-27 22:20 UTC_
-
----
-----|-------|
-| Horizon | D_next_6h (6h) |
-| Last trained | 2026-02-23T04:25:35.778027 |
-| Features | 17 |
-| Positive rate | 0.3186 |
-
----
-
-### 📉 Performance
-
-| Metric | Latest | Trend |
-|--------|--------|-------|
-| ROC-AUC | 0.9124 | ▇▇▇▁ |
-| PR-AUC | 0.8038 | ▇▇▇▁ |
-
----
-
-### 🚨 Health
-
-> ✅ No degradation detected
-
----
-
-### 🌧️ Current Weather
-
-> Disabled (free-tier safe mode)
-
-
----
 
 ## 🔁 End-to-End System Flow
 
@@ -752,15 +356,6 @@ Shutter Control
 
 ```
 
-### 📁 Dataset
-
-| Field | Value |
-|-------|-------|
-| Rows | 17,592 |
-| Range | 2024-02-22 → 2026-02-23 |
-
-_Last updated: 2026-02-23 04:25 UTC_
-
 ---
 ## 📜 License 
 This project is licensed under the MIT License. 
@@ -780,7 +375,7 @@ See SECURITY.md for reporting vulnerabilities.
 
 <div align="center">
 
-### 🌬️ Wisp
+### Weather ML
 
 *Don't let those  crops get wet*
 
