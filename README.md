@@ -260,19 +260,19 @@ Shutters will operate automatically using the latest trained model.
 
 | Field | Value |
 |-------|-------|
-| Last retrain (UTC) | 2026-03-15T04:33:18.506155 |
+| Last retrain (UTC) | 2026-03-17T04:20:10.566615 |
 | Active horizon | D_next_6h (6h) |
-| Dataset rows | 18,072 |
-| Data range | 2024-02-22 --> 2026-03-15 |
-| ROC-AUC | 0.8606 |
-| PR-AUC | 0.7339 |
-| Positive rate | 0.3138 |
+| Dataset rows | 18,120 |
+| Data range | 2024-02-22 --> 2026-03-17 |
+| ROC-AUC | 0.8564 |
+| PR-AUC | 0.7167 |
+| Positive rate | 0.3130 |
 | Features used | 34 |
 | CHIRPS training | Enabled |
 | CHIRPS feature count | 17 |
 | CHIRPS raw rows | 0 |
 | CHIRPS feature rows | 16,467 |
-| CHIRPS enriched rows | 18,072 |
+| CHIRPS enriched rows | 18,120 |
 
 _Last updated automatically by GitHub Actions._
 <!-- AUTO_STATUS_END -->
@@ -303,10 +303,10 @@ Future enhancements include rain sensors and limit switches.
 | Field | Value |
 |-------|-------|
 | Horizon | D_next_6h (6h) |
-| Last trained | 2026-03-15T04:33:18.506155 |
+| Last trained | 2026-03-17T04:20:10.566615 |
 | Features | 34 |
 | CHIRPS features | 17 |
-| Positive rate | 0.3138 |
+| Positive rate | 0.3130 |
 
 ---
 
@@ -314,8 +314,8 @@ Future enhancements include rain sensors and limit switches.
 
 | Metric | Latest | Trend |
 |--------|--------|-------|
-| ROC-AUC | 0.8606 | ▇▇▇▇▇▃▃▃▂▂▁▁ |
-| PR-AUC | 0.7339 | ▇▇▇▇▇▄▄▄▃▁▃▄ |
+| ROC-AUC | 0.8564 | ▇▇▇▇▃▃▃▃▂▁▁▁ |
+| PR-AUC | 0.7167 | ▇▇▇▇▅▅▅▄▁▄▄▂ |
 
 ---
 
@@ -335,10 +335,10 @@ Future enhancements include rain sensors and limit switches.
 
 | Field | Value |
 |-------|-------|
-| Rows | 18,072 |
-| Range | 2024-02-22 --> 2026-03-15 |
+| Rows | 18,120 |
+| Range | 2024-02-22 --> 2026-03-17 |
 
-_Last updated: 2026-03-15 04:33 UTC_
+_Last updated: 2026-03-17 04:20 UTC_
 <!-- AUTO_DASHBOARD_END -->
 
 
