@@ -11,12 +11,9 @@
 [![CHIRPS Dataset](https://img.shields.io/badge/CHIRPS-UCSB--CHG%2FCHIRPS%2FDAILY-1f7a8c)](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY)
 ![Earth Engine](https://img.shields.io/badge/Google%20Earth%20Engine-Enabled-34a853)
 ![CHIRPS Pipeline](https://img.shields.io/badge/CHIRPS%20Pipeline-Additive%20%26%20Fallback%20Safe-2a9d8f)
-
 [![npm version](https://img.shields.io/npm/v/weather-ml-edge.svg)](https://www.npmjs.com/package/weather-ml-edge)
 [![npm downloads](https://img.shields.io/npm/dm/weather-ml-edge.svg)](https://www.npmjs.com/package/weather-ml-edge)
-
----
-[![DOI](https://zenodo.org/badge/1163996139.svg)](https://doi.org/10.5281/zenodo.18738567)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18909972.svg)](https://doi.org/10.5281/zenodo.18909972)
 ---
 ## 🪟 Automated Rain-Responsive Shutter System (Raspberry Pi)
 
